@@ -205,7 +205,7 @@ Quel est votre occupation ?<br />
 
 **Too much vertical padding truncatres the pulldown on mobile**
 
-- If the pulldown gets cut off, you can reduce the vertical padding on elements in the Qualtrics UX. This can be done globally by adding the following CSS to the ‘Custom CSS’ area in the Look and Feel / Style area:
+- If the pulldown gets cut off, you can reduce the vertical padding on elements in the Qualtrics UX. This can be done globally by adding the CSS to the ‘Custom CSS’ area in the ‘Look and Feel’ / ‘Style’ area. Note that the CSS classes apparently differ by Qualtrics theme, so this CSS may not work without modification. (This works with University of Western Ontario – Theme 1.) 
 
 ``` CSS
 @media (max-width: 768px) {
