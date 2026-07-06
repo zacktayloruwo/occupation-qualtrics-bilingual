@@ -1,12 +1,19 @@
+---
+
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
 # Bilingual Occupation Selector for Qualtrics
 
 Zack Taylor, University of Western Ontario, zack.taylor\@uwo.ca
 
-June 9, 2026
+July 6, 2026
 
 A bilingual (English/French) occupation search widget for Qualtrics surveys, programmed in JS. Respondents type to search for their occupation and select from a dropdown. The widget stores the National Occupational Classification (NOC) 2021 code and category name as embedded data.
 
-The widget is currently functional at https://uwo.eu.qualtrics.com/jfe/form/SV_2tLglBOgSCp0Rz8.
+The widget is currently functional at <https://uwo.eu.qualtrics.com/jfe/form/SV_2tLglBOgSCp0Rz8>.
 
 ------------------------------------------------------------------------
 
@@ -202,3 +209,37 @@ Quel est votre occupation ?<br />
 - Confirm the HTML of the French translation of the question body contains the `<select></select>` element.
 
 - Confirm you are using the current version of `occupation_selectize.js`, which uses `sessionStorage` to persist the selection across language re-renders.
+
+**Too much vertical padding truncatres the pulldown on mobile**
+
+- If the pulldown gets cut off, you can reduce the vertical padding on elements in the Qualtrics UX. This can be done globally by adding the following CSS to the ‘Custom CSS’ area in the Look and Feel / Style area:
+
+``` CSS
+@media (max-width: 768px) {
+  .QuestionOuter,
+  .QuestionBody,
+  .SkinInner,
+  .QuestionText {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    margin-top: 4px !important;
+    margin-bottom: 4px !important;
+  }
+}
+
+#logo-container {
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+#header-container {
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+```
