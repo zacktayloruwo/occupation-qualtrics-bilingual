@@ -1,10 +1,3 @@
----
-
-editor_options: 
-  markdown: 
-    wrap: 72
----
-
 # Bilingual Occupation Selector for Qualtrics
 
 Zack Taylor, University of Western Ontario, zack.taylor\@uwo.ca
