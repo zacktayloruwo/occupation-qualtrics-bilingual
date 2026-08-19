@@ -16,11 +16,11 @@ editor_options:
 
 Zack Taylor, University of Western Ontario, zack.taylor\@uwo.ca
 
-July 6, 2026
+August 19, 2026
 
 A bilingual (English/French) occupation search widget for Qualtrics surveys, programmed in JS. Respondents type to search for their occupation and select from a dropdown. The widget stores the National Occupational Classification (NOC) 2021 code and category name as embedded data.
 
-The widget is currently functional at <https://uwo.eu.qualtrics.com/jfe/form/SV_2tLglBOgSCp0Rz8>.
+The widget is currently functional at <https://uwo.eu.qualtrics.com/jfe/form/SV_esdkA30l2ejov1Y>.
 
 ------------------------------------------------------------------------
 

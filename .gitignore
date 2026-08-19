@@ -13,3 +13,6 @@ Icon?
 
 # Superseded local working files (not published)
 _old/
+
+# local dev harness config
+.claude/

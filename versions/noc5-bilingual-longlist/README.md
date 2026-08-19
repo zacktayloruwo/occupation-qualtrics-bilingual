@@ -1,0 +1,146 @@
+# noc5-bilingual-longlist
+
+**Status:** Ready to test
+**NOC level:** 5-digit unit group (~516 categories)
+**Languages:** EN + FR
+**UI:** Tom Select single-select, flat long list
+
+Every NOC 2021 category name **and** every illustrative occupation title appears as
+its own separate row in the dropdown, listed alphabetically. A respondent who types
+"nurse" sees `Bedside nurse`, `Head nurse`, `Nurse practitioner` … as individual
+selectable entries, rather than the handful of category names those titles roll up to.
+
+Contrast with [`noc5-bilingual-tomselect`](../noc5-bilingual-tomselect/), where the
+~516 category names are the only visible rows and the occupation titles are hidden
+search keywords. Both versions resolve to the same NOC codes.
+
+| | tomselect | longlist |
+|---|---|---|
+| Visible rows (EN) | 516 | 28,457 |
+| Visible rows (FR) | 516 | 30,281 |
+| Titles are | hidden keywords | selectable rows |
+| Match ordering | relevance | alphabetical |
+
+---
+
+## Data prep
+
+Run `noc_process_longlist.R` from anywhere inside the project. It reads the shared
+CSVs in `data-raw/` and writes `noc2021_bilingual_longlist.js` into this folder.
+
+The cleaning steps (label filter, sentence case, quote normalisation, zero-padded
+codes) are identical to the tomselect version, so the two agree on codes and wording.
+Sort collation is pinned with `stri_rank(locale = "en"/"fr")` so the build is
+reproducible regardless of the machine's `LC_COLLATE`.
+
+Output shape:
+
+```js
+window.nocLonglist = {
+  categories: { "31300": { EN: "Nursing coordinators…", FR: "Coordonnateurs…" }, … },
+  EN: [ { code: "31300", label: "Head nurse", type: "T" }, … ],  // alphabetical
+  FR: [ … ]
+};
+```
+
+`type` is `"C"` for a category name and `"T"` for an occupation title. Category names
+are held in a separate lookup rather than repeated on all ~58,000 rows, which keeps
+the file to 4.8 MB (about 640 KB gzipped, which is what jsDelivr actually serves).
+
+---
+
+## Embedded data
+
+| Survey Flow field name | Contents |
+|---|---|
+| `__js_occupation_noc_code` | 5-digit NOC 2021 category code |
+| `__js_occupation_category_name` | Category the pick rolls up to |
+| `__js_occupation_selected_label` | The exact string the respondent chose |
+| `__js_occupation_selected_type` | `category` or `title` |
+| `__js_occupation_lang` | `EN` or `FR`, language at the time of the pick |
+
+Picking the title *Head nurse* records code `31300`, category name
+*Nursing coordinators and supervisors*, label *Head nurse*, type `title`.
+
+---
+
+## Installation
+
+Identical to the tomselect version except for the header scripts and the question
+JavaScript. See that version's README for the Qualtrics steps in full.
+
+Header (**Look & Feel → Header**):
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@COMMIT-SHA/versions/noc5-bilingual-longlist/noc2021_bilingual_longlist.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
+```
+
+Question JavaScript: paste `occupation_longlist.js`.
+
+Add the five embedded data fields above to the Survey Flow, and put
+`<select></select>` in the question body for **every** language translation.
+
+---
+
+## Behaviour notes
+
+### Alphabetical ordering is enforced against Tom Select
+
+Tom Select ignores `sortField` whenever a search query is active and always orders
+matches by relevance score. The only reliable way to get alphabetical output is to
+flatten the score so every match scores 1; ties then break on insertion order, and
+rows were inserted in locale-correct alphabetical order by the R script. That is what
+the `score` callback in `occupation_longlist.js` does — removing it silently reverts
+the dropdown to relevance ordering.
+
+### Broad queries exceed the render cap
+
+`MAX_OPTIONS` is 200. Because matches are alphabetical rather than relevance-ranked,
+a broad query can overflow it and the best match may not be visible:
+
+| Query (EN) | Matching rows |
+|---|---|
+| `nurse` | 158 |
+| `teacher` | 282 |
+| `engineer` | 660 |
+| `manager` | 1,195 |
+
+Typing `manager` lists 200 rows starting at `Abattoir manager`. Respondents need to
+type a more specific phrase. If this proves to be a problem in testing, the options
+are to raise `MAX_OPTIONS`, or to sort matches that *begin with* the query ahead of
+the rest and alphabetise within each group — a change to the `score` callback.
+
+### Language switching cannot translate a title
+
+The EN and FR title lists are not parallel-indexed, so an individual occupation title
+has no reliable translation. When a respondent switches language after answering, the
+widget:
+
+1. selects the **category** row for the saved code, so something sensible is displayed
+   in the new language; and
+2. leaves the stored answer untouched — `selected_label`, `selected_type` and `lang`
+   still describe the original pick.
+
+So a respondent who picks *Head nurse* in English and switches to French sees
+*Coordonnateurs/coordonnatrices et superviseurs/superviseures des soins infirmiers*
+on screen, while the data still records `Head nurse` / `title` / `EN`. Switching
+language does not silently rewrite an answer, but the on-screen text will no longer
+match what was stored. Re-selecting in the new language overwrites all five fields.
+
+Within the same language the exact row is restored, unchanged.
+
+---
+
+## Verification performed
+
+Tested in a browser harness against the real Tom Select build:
+
+- All 28,457 EN / 30,281 FR rows load; Tom Select init ~12 ms, search ~5 ms.
+- Rendered match order is byte-identical to the R-generated alphabetical order.
+- Picking a title, picking a category, and the Clear button write the expected fields.
+- EN title pick → switch to FR → falls back to the FR category name, stored answer preserved.
+- No console errors.
+
+Not yet tested inside Qualtrics itself.
