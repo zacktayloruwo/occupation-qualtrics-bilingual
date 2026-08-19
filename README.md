@@ -2,7 +2,7 @@
 
 Zack Taylor, University of Western Ontario, [zack.taylor\@uwo.ca](mailto:zack.taylor@uwo.ca){.email}
 
-**Interactive demo: <https://zacktayloruwo.github.io/occupation-qualtrics-bilingual/>** Try all four versions side by side, in English or French, without installing anything.
+**Interactive demo: <https://zacktayloruwo.github.io/occupation-qualtrics-bilingual/>** Try all five versions side by side, in English or French, without installing anything.
 
 A collection of JavaScript occupation-search widgets for Qualtrics surveys, built on the National Occupational Classification (NOC) 2021. Each **version** is a self-contained variant of the selector — a different aggregation level, interaction style, or language configuration — living in its own subfolder under `versions/`.
 
@@ -38,7 +38,7 @@ Each version owns its data-prep script outright. Versions do **not** import shar
 | [`noc5-bilingual-keywords`](versions/noc5-bilingual-keywords/) | 5-digit unit group (516) | EN + FR | Tom Select, occupation titles only, alphabetical | Ready to test |
 | [`noc5-bilingual-matches`](versions/noc5-bilingual-matches/) | 5-digit unit group (516) | EN + FR | Tom Select, as tomselect but shows which occupation titles matched | Ready to test |
 
-The four versions cover every combination of what is displayed and what is searched:
+The five versions cover every combination of what is displayed and what is searched:
 
 | Version | Rows shown (EN) | Searchable text | Match ordering |
 |----|----|----|----|
@@ -48,7 +48,7 @@ The four versions cover every combination of what is displayed and what is searc
 | `noc5-bilingual-longlist` | 28,457 of both | both | alphabetical |
 | `noc5-bilingual-matches` | 516 category names | category names + occupation titles, **with the matched titles shown** | relevance |
 
-All four resolve to the same 5-digit NOC codes, so responses are directly comparable.
+All five resolve to the same 5-digit NOC codes, so responses are directly comparable.
 
 ------------------------------------------------------------------------
 

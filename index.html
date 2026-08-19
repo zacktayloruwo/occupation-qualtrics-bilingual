@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Occupation selector versions — NOC 2021</title>
-<meta name="description" content="Four search behaviours for a bilingual NOC 2021 occupation selector in Qualtrics. Interactive comparison.">
+<meta name="description" content="Five search behaviours for a bilingual NOC 2021 occupation selector in Qualtrics. Interactive comparison.">
 <style>
  :root{
    --ink:#16181d; --mut:#5c6370; --faint:#8a909b;
@@ -53,16 +53,16 @@
 </style></head><body>
 
 <header><div class="wrap">
-  <h1>Occupation selector — four search behaviours</h1>
+  <h1>Occupation selector — five search behaviours</h1>
   <p class="by">Zack Taylor, University of Western Ontario ·
      <a href="https://github.com/zacktayloruwo/occupation-qualtrics-bilingual">source on GitHub</a></p>
 
-  <p class="lede">These are four working versions of a bilingual occupation-search widget for
+  <p class="lede">These are five working versions of a bilingual occupation-search widget for
   Qualtrics surveys, built on the <a href="https://open.canada.ca/data/en/dataset/1feee3b5-8068-4dbb-b361-180875837593">National
   Occupational Classification (NOC) 2021</a>. A respondent types what they do for a living and
   picks from a dropdown; the widget records the 5-digit NOC code behind their choice.</p>
 
-  <p class="lede">All four wrap the same classification and resolve to the same codes. What differs
+  <p class="lede">All five wrap the same classification and resolve to the same codes. What differs
   is <b>what the respondent sees, what the search actually matches against, and the order results
   appear in</b>. The point of this page is to make those differences easy to feel rather than
   describe, so we can decide which to field.</p>
@@ -72,7 +72,7 @@
 
 <div class="wrap">
 
-  <h2>How the four differ</h2>
+  <h2>How the five differ</h2>
   <div class="scroll"><table>
     <thead><tr><th>Version</th><th>Rows shown</th><th>What the search matches</th><th>Order</th><th>Data file</th></tr></thead>
     <tbody>
@@ -84,16 +84,19 @@
           <td>occupation titles only</td><td>alphabetical</td><td>4.0 MB</td></tr>
       <tr><td><code>longlist</code></td><td>28,457 of both</td>
           <td>both, all selectable</td><td>alphabetical</td><td>4.8 MB</td></tr>
+      <tr><td><code>matches</code></td><td>516 category names</td>
+          <td>category names and titles, with the matched titles shown</td><td>relevance</td><td>2.7 MB</td></tr>
     </tbody>
   </table></div>
   <p class="note">Row counts are for English; French lists are slightly longer (516 categories,
-  29,767 titles). <code>tomselect</code> is the version currently fielded. The figures shown on each
+  29,767 titles). <code>tomselect</code> is the version currently fielded, and
+  <code>matches</code> is that same version with the matching made visible. The figures shown on each
   card below are computed live from the data file that card actually loaded.</p>
 
   <h2>Things worth trying</h2>
   <p class="note">
-  Type <kbd>nurse</kbd> into all four and compare: <code>categories</code> returns 5 results,
-  <code>tomselect</code> 15, <code>keywords</code> 153, <code>longlist</code> 158.<br>
+  Type <kbd>nurse</kbd> into all five and compare: <code>categories</code> returns 5 results,
+  <code>tomselect</code> and <code>matches</code> 15, <code>keywords</code> 153, <code>longlist</code> 158.<br>
   Type <kbd>head nurse</kbd> into <code>tomselect</code> and then <code>matches</code>: both return
   <i>Managers in horticulture</i> first, but only <code>matches</code> shows you that nothing in that
   category actually matched your words.<br>

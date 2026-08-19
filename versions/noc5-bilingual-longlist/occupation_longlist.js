@@ -28,6 +28,13 @@ Qualtrics.SurveyEngine.addOnload(function () {
     var questionId  = this.getQuestionInfo().QuestionID;
     var SESSION_KEY = "occupation_longlist_selection";
 
+    // Set to "EN" or "FR" on a survey that offers only ONE language and therefore
+    // has no language selector. Left null, the language is auto-detected, which
+    // resolves to English whenever French cannot be positively identified -- so a
+    // French-only survey that exposes neither Q_Language nor <html lang="fr">
+    // would silently render in English. Setting this removes the guesswork.
+    var FORCE_LANG = null;
+
     // Cap on how many matches are rendered at once. The full list is ~28,000
     // (EN) / ~30,000 (FR) rows, so an uncapped dropdown would be unusable.
     // Because matches are shown in strict alphabetical order rather than by
@@ -49,12 +56,33 @@ Qualtrics.SurveyEngine.addOnload(function () {
 
         // ── Language ──────────────────────────────────────────────────────────
 
+        // Detection only ever recognises French; anything else becomes English.
+        // The widget cannot see which languages the survey actually has, so it
+        // cannot "fall back to the remaining language" on its own. On a
+        // single-language survey set FORCE_LANG above and none of this runs.
         function getCurrentLang() {
-            var urlLang = new URLSearchParams(window.location.search).get("Q_Language") || "";
-            if (urlLang.toLowerCase().startsWith("fr")) return "FR";
+            if (FORCE_LANG) {
+                return String(FORCE_LANG).trim().toUpperCase().indexOf("FR") === 0 ? "FR" : "EN";
+            }
 
-            var htmlLang = document.documentElement.lang || "";
-            if (htmlLang.toLowerCase().startsWith("fr")) return "FR";
+            // Accepts "fr", "FR", "fr-CA", "FR-CA", "fr_CA".
+            function isFrench(value) {
+                return String(value || "").trim().toLowerCase().replace(/_/g, "-").indexOf("fr") === 0;
+            }
+
+            // 1. Qualtrics language query parameter.
+            if (isFrench(new URLSearchParams(window.location.search).get("Q_Language"))) return "FR";
+
+            // 2. Document language attribute.
+            if (isFrench(document.documentElement.lang)) return "FR";
+
+            // 3. Q_Language as embedded data, where the survey exposes it.
+            //    Not available in every Qualtrics version, hence the guard.
+            try {
+                if (window.Qualtrics && Qualtrics.SurveyEngine &&
+                    typeof Qualtrics.SurveyEngine.getEmbeddedData === "function" &&
+                    isFrench(Qualtrics.SurveyEngine.getEmbeddedData("Q_Language"))) return "FR";
+            } catch (e) { /* getEmbeddedData not supported here */ }
 
             return "EN";
         }

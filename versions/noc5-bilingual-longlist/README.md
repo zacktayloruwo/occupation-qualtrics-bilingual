@@ -112,6 +112,31 @@ type a more specific phrase. If this proves to be a problem in testing, the opti
 are to raise `MAX_OPTIONS`, or to sort matches that *begin with* the query ahead of
 the rest and alphabetise within each group — a change to the `score` callback.
 
+### Single-language surveys: set `FORCE_LANG`
+
+Language detection only ever recognises French; anything it cannot positively
+identify as French becomes English. The widget has no way to see which languages
+the survey actually offers, so it cannot fall back to "whichever language remains".
+
+On a bilingual survey this is fine. On a survey offering only ONE language, and
+therefore having no language selector:
+
+- **English-only** works correctly, because English is the fallback.
+- **French-only** works only if Qualtrics exposes `Q_Language=FR` in the URL or
+  `<html lang="fr">`. If neither is present the widget renders in **English** and
+  records `__js_occupation_lang` as `EN`, silently.
+
+Set `FORCE_LANG` at the top of the widget script to remove the guesswork:
+
+```js
+var FORCE_LANG = "FR";   // or "EN"; null means auto-detect
+```
+
+Verified: with `FORCE_LANG` unset and no language signals present, the widget resolves
+to English; set to `"FR"` it renders French regardless; set to `"EN"` it stays English
+even when `<html lang="fr">` is present. Auto-detection handles `fr`, `FR`, `fr-CA`,
+`FR-CA` and `fr_CA`.
+
 ### Language switching cannot translate a title
 
 The EN and FR title lists are not parallel-indexed, so an individual occupation title
