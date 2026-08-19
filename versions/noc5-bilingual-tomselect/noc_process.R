@@ -1,7 +1,15 @@
-# Process NOC files
+# Version: noc5-bilingual-tomselect
+# Builds noc2021_bilingual.js -- all ~500 NOC 2021 5-digit unit groups, EN + FR,
+# each with its illustrative-example occupation titles as search keywords.
+#
 # Uses NOC 2021 version 1
 # https://open.canada.ca/data/en/dataset/1feee3b5-8068-4dbb-b361-180875837593
+#
+# Reads from  <project root>/data-raw/
+# Writes to   <project root>/versions/noc5-bilingual-tomselect/
+# Run from anywhere inside the project (paths resolve via here::here()).
 
+library(here)
 library(tidyverse)
 library(data.table)
 library(stringi)
@@ -9,8 +17,8 @@ library(readr)
 
 # English ----
 
-en <- rio::import("noc_2021_version_1.0_-_elements.csv")
-en_add <- rio::import("noc_2021_version_1.0_-_elements-additional.csv")
+en <- rio::import(here::here("data-raw", "noc_2021_version_1.0_-_elements.csv"))
+en_add <- rio::import(here::here("data-raw", "noc_2021_version_1.0_-_elements-additional.csv"))
 
 colnames(en) <- c("level", 
                   "category_code", 
@@ -36,14 +44,14 @@ en <- en |>
   mutate(occupation_name = str_replace(occupation_name, "^.", ~ toupper(.x))) |>
   # fix quotes within quotes
   mutate(occupation_name = str_replace_all(occupation_name, '"', "'")) |> 
-  # sort alpha
-  arrange(occupation_name) |>
+  # sort alpha -- explicit locale so the build is reproducible across machines
+  arrange(stri_rank(occupation_name, locale = "en")) |>
   # leading zeros on category code
   mutate(category_code = str_pad(category_code, width = 5, side = "left", pad = "0"))
 
 # French ----
 
-fr <- rio::import("cnp_2021_version_1.0_-_elements.csv")
+fr <- rio::import(here::here("data-raw", "cnp_2021_version_1.0_-_elements.csv"))
 
 colnames(fr) <- c("level", 
                   "category_code", 
@@ -61,8 +69,8 @@ fr <- fr |>
   mutate(occupation_name = str_replace(occupation_name, "^.", ~ toupper(.x))) |>
   # fix quotes within quotes
   mutate(occupation_name = str_replace_all(occupation_name, '"', "'")) |> 
-  # sort alpha
-  arrange(occupation_name) |>
+  # sort alpha -- explicit locale so the build is reproducible across machines
+  arrange(stri_rank(occupation_name, locale = "fr")) |>
   # leading zeros on category code
   mutate(category_code = str_pad(category_code, width = 5, side = "left", pad = "0"))
 
@@ -90,4 +98,8 @@ json_code <- toJSON(bilingual_tbl, dataframe = "rows", pretty = TRUE, auto_unbox
 js_code <- paste0("window.categories = window.categories || ", json_code, ";")
 
 # Write to file (UTF-8)
-writeLines(js_code, "noc2021_bilingual.js", useBytes = TRUE)
+writeLines(
+  js_code,
+  here::here("versions", "noc5-bilingual-tomselect", "noc2021_bilingual.js"),
+  useBytes = TRUE
+)

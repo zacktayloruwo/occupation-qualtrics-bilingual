@@ -1,0 +1,15 @@
+# R
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# macOS / Dropbox
+.DS_Store
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Superseded local working files (not published)
+_old/
