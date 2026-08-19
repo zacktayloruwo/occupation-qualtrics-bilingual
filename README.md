@@ -2,6 +2,9 @@
 
 Zack Taylor, University of Western Ontario, [zack.taylor\@uwo.ca](mailto:zack.taylor@uwo.ca){.email}
 
+**Interactive demo: <https://zacktayloruwo.github.io/occupation-qualtrics-bilingual/>**
+Try all four versions side by side, in English or French, without installing anything.
+
 A collection of JavaScript occupation-search widgets for Qualtrics surveys, built on the National Occupational Classification (NOC) 2021. Each **version** is a self-contained variant of the selector — a different aggregation level, interaction style, or language configuration — living in its own subfolder under `versions/`.
 
 ------------------------------------------------------------------------
@@ -10,6 +13,8 @@ A collection of JavaScript occupation-search widgets for Qualtrics surveys, buil
 
 ```         
 data-raw/                 Shared NOC 2021 source files (see below). Never edited by hand.
+index.html                Public demo page, served by GitHub Pages
+demo/widget.html          Per-version frame used by the demo (stands in for the Qualtrics engine)
 versions/
   <version-name>/         One self-contained selector variant:
     README.md               Installation + behaviour notes for this version
@@ -17,7 +22,6 @@ versions/
     <data>.js               Generated data file, served to Qualtrics via jsDelivr
     <widget>.js             The Qualtrics question JavaScript
   _template/              Starting point for a new version
-index.html                Placeholder page for the GitHub Pages root
 LICENSE
 ```
 

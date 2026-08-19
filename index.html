@@ -1,9 +1,200 @@
 <!doctype html>
-<html>
-  <head>
-    <title>occupations-qualitrics-bilingual</title>
-  </head>
-  <body>
-    <p>occupations-qualitrics-bilingual</p>
-  </body>
-</html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Occupation selector versions — NOC 2021</title>
+<meta name="description" content="Four search behaviours for a bilingual NOC 2021 occupation selector in Qualtrics. Interactive comparison.">
+<style>
+ :root{
+   --ink:#16181d; --mut:#5c6370; --faint:#8a909b;
+   --bd:#e2e4e8; --bg:#fbfbfc; --card:#fff; --accent:#1f4e79;
+   --max:1180px;
+ }
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--ink);
+      font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+ .wrap{max-width:var(--max);margin:0 auto;padding:0 20px}
+ header{background:var(--card);border-bottom:1px solid var(--bd);padding:28px 0 22px}
+ h1{margin:0 0 4px;font-size:23px;letter-spacing:-.01em}
+ .by{color:var(--mut);font-size:13.5px;margin:0 0 16px}
+ .lede{max-width:74ch;margin:0 0 4px}
+ .lede + .lede{margin-top:10px}
+ a{color:var(--accent)}
+ h2{font-size:17px;margin:32px 0 10px;letter-spacing:-.01em}
+ .note{color:var(--mut);font-size:13.5px;max-width:78ch}
+
+ table{border-collapse:collapse;width:100%;font-size:13.5px;margin:12px 0 4px;background:var(--card)}
+ th,td{border:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}
+ th{background:#f4f5f7;font-weight:600}
+ td code,th code{font-size:12.5px}
+ .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+ nav{margin:16px 0 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+ nav a,nav button{display:inline-block;padding:6px 13px;border:1px solid var(--bd);border-radius:6px;
+   text-decoration:none;color:var(--ink);background:var(--card);font-size:13.5px;cursor:pointer;font-family:inherit}
+ nav a.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+ nav a:hover:not(.on),nav button:hover{background:#f2f3f5}
+
+ .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:14px 0 40px}
+ @media(max-width:940px){.grid{grid-template-columns:1fr}}
+ .card{background:var(--card);border:1px solid var(--bd);border-radius:9px;overflow:hidden;display:flex;flex-direction:column}
+ .card > .hd{padding:14px 16px 12px;border-bottom:1px solid var(--bd)}
+ .card h3{margin:0 0 3px;font-size:15px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:-.02em}
+ .tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:99px;margin-left:6px;
+      background:#eef2f7;color:var(--accent);font-family:inherit;letter-spacing:0;vertical-align:2px}
+ .desc{color:var(--mut);font-size:13.5px;margin:6px 0 0}
+ dl{margin:11px 0 0;font-size:13px;display:grid;grid-template-columns:auto 1fr;gap:3px 10px}
+ dt{color:var(--faint)}
+ dd{margin:0}
+ iframe{width:100%;height:300px;border:0;display:block}
+ .ft{padding:11px 16px 14px;border-top:1px solid var(--bd);font-size:12.5px;color:var(--mut)}
+ .ft b{color:var(--ink);font-weight:600}
+ footer{border-top:1px solid var(--bd);background:var(--card);padding:22px 0 34px;font-size:13.5px;color:var(--mut)}
+ kbd{background:#f0f1f4;border:1px solid var(--bd);border-bottom-width:2px;border-radius:4px;
+     padding:1px 6px;font:12.5px ui-monospace,Menlo,monospace}
+</style></head><body>
+
+<header><div class="wrap">
+  <h1>Occupation selector — four search behaviours</h1>
+  <p class="by">Zack Taylor, University of Western Ontario ·
+     <a href="https://github.com/zacktayloruwo/occupation-qualtrics-bilingual">source on GitHub</a></p>
+
+  <p class="lede">These are four working versions of a bilingual occupation-search widget for
+  Qualtrics surveys, built on the <a href="https://open.canada.ca/data/en/dataset/1feee3b5-8068-4dbb-b361-180875837593">National
+  Occupational Classification (NOC) 2021</a>. A respondent types what they do for a living and
+  picks from a dropdown; the widget records the 5-digit NOC code behind their choice.</p>
+
+  <p class="lede">All four wrap the same classification and resolve to the same codes. What differs
+  is <b>what the respondent sees, what the search actually matches against, and the order results
+  appear in</b>. The point of this page is to make those differences easy to feel rather than
+  describe, so we can decide which to field.</p>
+
+  <nav id="nav"></nav>
+</div></header>
+
+<div class="wrap">
+
+  <h2>How the four differ</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Version</th><th>Rows shown</th><th>What the search matches</th><th>Order</th><th>Data file</th></tr></thead>
+    <tbody>
+      <tr><td><code>tomselect</code></td><td>516 category names</td>
+          <td>category names <i>and</i> ~28,000 hidden occupation titles</td><td>relevance</td><td>2.7 MB</td></tr>
+      <tr><td><code>categories</code></td><td>516 category names</td>
+          <td>category names only</td><td>alphabetical</td><td>84 KB</td></tr>
+      <tr><td><code>keywords</code></td><td>27,941 occupation titles</td>
+          <td>occupation titles only</td><td>alphabetical</td><td>4.0 MB</td></tr>
+      <tr><td><code>longlist</code></td><td>28,457 of both</td>
+          <td>both, all selectable</td><td>alphabetical</td><td>4.8 MB</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">Row counts are for English; French lists are slightly longer (516 categories,
+  29,767 titles). <code>tomselect</code> is the version currently fielded. The figures shown on each
+  card below are computed live from the data file that card actually loaded.</p>
+
+  <h2>Things worth trying</h2>
+  <p class="note">
+  Type <kbd>nurse</kbd> into all four and compare: <code>categories</code> returns 5 results,
+  <code>tomselect</code> 15, <code>keywords</code> 153, <code>longlist</code> 158.<br>
+  Type <kbd>head nurse</kbd>: only the versions that search titles will find anything.<br>
+  Type <kbd>manager</kbd> to see the cost of alphabetical ordering — roughly 1,200 titles match, so
+  the list opens at <i>Abattoir manager</i> and never reaches the useful ones.<br>
+  Switch to <kbd>Français</kbd> after choosing something, and watch what survives the switch.<br>
+  Every selection updates the embedded-data panel underneath, exactly as it would be written into
+  a Qualtrics response.</p>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<footer><div class="wrap">
+  This is a demonstration harness, not a live survey — nothing you type here is recorded or
+  transmitted anywhere. The widgets are the unmodified production scripts, running against a
+  small stand-in for the Qualtrics survey engine.
+  Full documentation for each version is in the
+  <a href="https://github.com/zacktayloruwo/occupation-qualtrics-bilingual">repository</a>.
+</div></footer>
+
+<script>
+const VERSIONS = [
+  {id:'tomselect', name:'noc5-bilingual-tomselect', tag:'in production',
+   desc:'Shows the 516 broad category names, but quietly searches the ~28,000 occupation titles behind them. Typing a specific job title surfaces the category it belongs to, without ever showing you the title you matched.',
+   shown:'516 category names', searched:'categories + hidden titles', order:'relevance',
+   note:'Selections survive a language switch intact, since the code is language-independent.'},
+  {id:'categories', name:'noc5-bilingual-categories', tag:'ready to test',
+   desc:'Shows the same 516 category names, but searches nothing else. What you see is exactly what is searched, so a specific job title finds nothing. The lightest version by far.',
+   shown:'516 category names', searched:'category names only', order:'alphabetical',
+   note:'The only version with no cross-language caveat — every category has both an English and a French name.'},
+  {id:'keywords', name:'noc5-bilingual-keywords', tag:'ready to test',
+   desc:'The mirror image: only concrete occupation titles are selectable, and category names are never shown. The respondent picks a real job title and the widget reports the category it rolls up to.',
+   shown:'27,941 occupation titles', searched:'occupation titles only', order:'alphabetical',
+   note:'Titles have no reliable translation, so a language switch keeps your original wording on screen rather than blanking the answer.'},
+  {id:'longlist', name:'noc5-bilingual-longlist', tag:'ready to test',
+   desc:'Everything is selectable — both the category names and every occupation title, interleaved in one alphabetical list. The broadest surface, and the longest.',
+   shown:'28,457 rows, both kinds', searched:'both', order:'alphabetical',
+   note:'After a language switch, a chosen title falls back to displaying its category in the new language; the stored answer is left untouched.'}
+];
+
+const lang = (new URLSearchParams(location.search).get('Q_Language')||'EN').toUpperCase();
+
+document.getElementById('nav').innerHTML =
+  '<span class="note" style="margin-right:4px">Language:</span>' +
+  ['EN','FR'].map(l => `<a class="${l===lang?'on':''}" href="?Q_Language=${l}">${l==='EN'?'English':'Français'}</a>`).join('') +
+  '<button type="button" id="reset">Reset stored answers</button>';
+
+document.getElementById('grid').innerHTML = VERSIONS.map(v => `
+  <section class="card">
+    <div class="hd">
+      <h3>${v.name.replace('noc5-bilingual-','')}<span class="tag">${v.tag}</span></h3>
+      <p class="desc">${v.desc}</p>
+      <dl>
+        <dt>Shown</dt><dd>${v.shown}</dd>
+        <dt>Searched</dt><dd>${v.searched}</dd>
+        <dt>Order</dt><dd>${v.order}</dd>
+        <dt>In list</dt><dd id="st-${v.id}">loading…</dd>
+      </dl>
+    </div>
+    <iframe data-src="demo/widget.html?w=${v.id}&Q_Language=${lang}" title="${v.name} demo" loading="lazy"></iframe>
+    <div class="ft"><b>Note.</b> ${v.note}</div>
+  </section>`).join('');
+
+/* The data files are large (up to 4.8 MB), so a card only fetches its version
+   once it is near the viewport. A plain rect check is used rather than
+   IntersectionObserver, which does not fire reliably in every embedded or
+   background rendering context -- and a card that never loads is worse than
+   one that loads early. */
+const frames = [...document.querySelectorAll('iframe')];
+let ticking = false;
+function loadVisible(){
+  ticking = false;
+  const limit = window.innerHeight + 600;
+  let remaining = 0;
+  for (const f of frames) {
+    if (f.getAttribute('src')) continue;
+    const r = f.getBoundingClientRect();
+    if (r.top < limit && r.bottom > -600) f.setAttribute('src', f.dataset.src);
+    else remaining++;
+  }
+  if (!remaining) {
+    window.removeEventListener('scroll', schedule);
+    window.removeEventListener('resize', schedule);
+  }
+}
+function schedule(){ if (!ticking) { ticking = true; requestAnimationFrame(loadVisible); } }
+window.addEventListener('scroll', schedule, {passive:true});
+window.addEventListener('resize', schedule);
+loadVisible();
+/* Backstop: if nothing has scrolled and something is still unloaded, load the
+   rest anyway rather than leave a card permanently blank. */
+setTimeout(() => frames.forEach(f => { if (!f.getAttribute('src')) f.setAttribute('src', f.dataset.src); }), 8000);
+
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || !d.demo) return;
+  const el = document.getElementById('st-'+d.which);
+  if (el) el.textContent = d.detail;
+});
+
+document.getElementById('reset').addEventListener('click', () => {
+  sessionStorage.clear();
+  location.reload();
+});
+</script>
+</body></html>

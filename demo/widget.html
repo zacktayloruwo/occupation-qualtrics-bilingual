@@ -1,0 +1,116 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>widget frame</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
+<style>
+ :root{--bd:#dcdcdc;--mut:#5c6370;--bg:#fff}
+ *{box-sizing:border-box}
+ body{font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;margin:0;padding:14px;color:#16181d;background:var(--bg)}
+ .qlabel{font-weight:600;margin-bottom:7px}
+ .row{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+ button{padding:5px 12px;font:inherit;cursor:pointer;border:1px solid var(--bd);border-radius:5px;background:#fff}
+ button:hover{background:#f2f3f5}
+ h3{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:16px 0 5px;font-weight:600}
+ pre{background:#f6f7f9;border:1px solid #eceef1;padding:9px 10px;border-radius:5px;font-size:11.5px;
+     line-height:1.55;white-space:pre-wrap;word-break:break-word;margin:0;min-height:62px;
+     font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+ .empty{color:#8a909b}
+ .k{color:#6b7280}
+ .status{font-size:12px;color:var(--mut);margin-bottom:8px;min-height:18px}
+ .ts-dropdown{z-index:60}
+ .ts-wrapper.single .ts-control{border-color:var(--bd)}
+</style></head><body>
+<div class="status" id="status">Loading data…</div>
+<div id="q" hidden>
+  <div class="qlabel" id="qt"></div>
+  <select></select>
+  <div class="row"><button type="button" id="button-clear"></button></div>
+</div>
+<h3>Embedded data written to Qualtrics</h3>
+<pre id="ed" class="empty">(nothing selected)</pre>
+
+<script>
+const P     = new URLSearchParams(location.search);
+const WHICH = P.get('w') || 'categories';
+const LANG  = (P.get('Q_Language')||'EN').toUpperCase();
+const FR    = LANG === 'FR';
+document.documentElement.lang = FR ? 'fr' : 'en';
+document.getElementById('qt').textContent = FR ? 'Quel est votre occupation ?' : 'What is your occupation?';
+document.getElementById('button-clear').textContent = FR ? 'Effacer' : 'Clear';
+
+const SPEC = {
+  tomselect:  {dir:'noc5-bilingual-tomselect',  data:'noc2021_bilingual.js',            js:'occupation_selectize.js'},
+  categories: {dir:'noc5-bilingual-categories', data:'noc2021_bilingual_categories.js', js:'occupation_categories.js'},
+  keywords:   {dir:'noc5-bilingual-keywords',   data:'noc2021_bilingual_keywords.js',   js:'occupation_keywords.js'},
+  longlist:   {dir:'noc5-bilingual-longlist',   data:'noc2021_bilingual_longlist.js',   js:'occupation_longlist.js'}
+};
+
+/* Minimal stand-in for the Qualtrics survey engine, so the unmodified
+   production widget scripts run unchanged outside Qualtrics. */
+window.__ED = {};
+function render(){
+  const el = document.getElementById('ed');
+  const keys = Object.keys(window.__ED).filter(k => window.__ED[k] !== '');
+  if (!keys.length){ el.textContent = '(nothing selected)'; el.className = 'empty'; return; }
+  el.className = '';
+  el.innerHTML = keys.map(k =>
+    '<span class="k">'+k+':</span> '+String(window.__ED[k]).replace(/</g,'&lt;')).join('\n');
+}
+window.Qualtrics = { SurveyEngine: {
+  addOnload: f => window.__onload = f,
+  setJSEmbeddedData: (k,v) => { window.__ED['__js_'+k] = v; render(); }
+}};
+const CTX = { getQuestionContainer: () => document.getElementById('q'),
+              getQuestionInfo:      () => ({QuestionID:'QID_DEMO'}) };
+
+function load(src){
+  return new Promise((ok,err) => { const s=document.createElement('script');
+    s.src=src; s.onload=ok; s.onerror=()=>err(new Error('failed to load '+src)); document.head.appendChild(s); });
+}
+
+/* Row counts for the active language, reported back to the parent page so the
+   figures shown are always computed from the data actually loaded. */
+function stats(){
+  if (WHICH === 'tomselect'){
+    const c = window.categories || [];
+    const titles = c.reduce((n,x) => n + ((x['occupations_'+LANG]||[]).length), 0);
+    return {rows: c.length, detail: c.length.toLocaleString()+' categories shown, '
+                    + titles.toLocaleString()+' titles searched invisibly'};
+  }
+  if (WHICH === 'categories'){
+    const n = (window.nocCategories||{})[LANG]?.length || 0;
+    return {rows:n, detail: n.toLocaleString()+' category names, all selectable'};
+  }
+  if (WHICH === 'keywords'){
+    const n = (window.nocKeywords||{})[LANG]?.length || 0;
+    return {rows:n, detail: n.toLocaleString()+' occupation titles, all selectable'};
+  }
+  const rows = (window.nocLonglist||{})[LANG] || [];
+  const c = rows.filter(r=>r.type==='C').length;
+  return {rows: rows.length, detail: rows.length.toLocaleString()+' rows = '
+          + c.toLocaleString()+' category names + ' + (rows.length-c).toLocaleString()+' titles'};
+}
+
+(async () => {
+  const spec = SPEC[WHICH];
+  try {
+    await load('../versions/'+spec.dir+'/'+spec.data);
+    await load('https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js');
+    await load('../versions/'+spec.dir+'/'+spec.js);
+  } catch (e) {
+    document.getElementById('status').textContent = 'Could not load: ' + e.message;
+    return;
+  }
+  document.getElementById('q').hidden = false;
+  window.__onload.call(CTX);
+  /* the widget polls for its dependencies, so wait for the control to exist */
+  const wait = setInterval(() => {
+    const ts = document.querySelector('select').tomselect;
+    if (!ts) return;
+    clearInterval(wait);
+    const s = stats();
+    document.getElementById('status').textContent = s.detail;
+    parent.postMessage({demo:true, which:WHICH, rows:s.rows, detail:s.detail}, '*');
+  }, 30);
+})();
+</script></body></html>
