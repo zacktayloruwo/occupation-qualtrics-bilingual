@@ -31,6 +31,19 @@ Each version owns its data-prep script outright. Versions do **not** import shar
 |----|----|----|----|----|
 | [`noc5-bilingual-tomselect`](versions/noc5-bilingual-tomselect/) | 5-digit unit group (\~500) | EN + FR | Tom Select single-select | In production |
 | [`noc5-bilingual-longlist`](versions/noc5-bilingual-longlist/) | 5-digit unit group (516) | EN + FR | Tom Select, flat alphabetical list of every category name and occupation title | Ready to test |
+| [`noc5-bilingual-categories`](versions/noc5-bilingual-categories/) | 5-digit unit group (516) | EN + FR | Tom Select, category names only, alphabetical | Ready to test |
+| [`noc5-bilingual-keywords`](versions/noc5-bilingual-keywords/) | 5-digit unit group (516) | EN + FR | Tom Select, occupation titles only, alphabetical | Ready to test |
+
+The four versions cover every combination of what is displayed and what is searched:
+
+| Version | Rows shown (EN) | Searchable text | Match ordering |
+|---|---|---|---|
+| `noc5-bilingual-tomselect` | 516 category names | category names + hidden occupation titles | relevance |
+| `noc5-bilingual-categories` | 516 category names | category names only | alphabetical |
+| `noc5-bilingual-keywords` | 27,941 occupation titles | occupation titles only | alphabetical |
+| `noc5-bilingual-longlist` | 28,457 of both | both | alphabetical |
+
+All four resolve to the same 5-digit NOC codes, so responses are directly comparable.
 
 ------------------------------------------------------------------------
 
