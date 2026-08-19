@@ -94,7 +94,11 @@
   <p class="note">
   Type <kbd>nurse</kbd> into all four and compare: <code>categories</code> returns 5 results,
   <code>tomselect</code> 15, <code>keywords</code> 153, <code>longlist</code> 158.<br>
-  Type <kbd>head nurse</kbd>: only the versions that search titles will find anything.<br>
+  Type <kbd>head nurse</kbd> into <code>tomselect</code> and then <code>matches</code>: both return
+  <i>Managers in horticulture</i> first, but only <code>matches</code> shows you that nothing in that
+  category actually matched your words.<br>
+  Type <kbd>plumber</kbd> into <code>matches</code> to see three near-identical categories become
+  distinguishable.<br>
   Type <kbd>manager</kbd> to see the cost of alphabetical ordering — roughly 1,200 titles match, so
   the list opens at <i>Abattoir manager</i> and never reaches the useful ones.<br>
   Switch to <kbd>Français</kbd> after choosing something, and watch what survives the switch.<br>
@@ -129,7 +133,11 @@ const VERSIONS = [
   {id:'longlist', name:'noc5-bilingual-longlist', tag:'ready to test',
    desc:'Everything is selectable — both the category names and every occupation title, interleaved in one alphabetical list. The broadest surface, and the longest.',
    shown:'28,457 rows, both kinds', searched:'both', order:'alphabetical',
-   note:'After a language switch, a chosen title falls back to displaying its category in the new language; the stored answer is left untouched.'}
+   note:'After a language switch, a chosen title falls back to displaying its category in the new language; the stored answer is left untouched.'},
+  {id:'matches', name:'noc5-bilingual-matches', tag:'ready to test',
+   desc:'Identical to <code>tomselect</code> in what it shows and what it records, but it stops hiding the match. A line above the box names the closest occupation titles to what you typed, and each row in the list says which of its own titles matched. Same 516 answers, with the reasoning made visible.',
+   shown:'516 category names', searched:'categories + titles, with the matched titles shown', order:'relevance',
+   note:'Try <b>head nurse</b> here and in <code>tomselect</code> to see the difference feedback makes.'}
 ];
 
 const lang = (new URLSearchParams(location.search).get('Q_Language')||'EN').toUpperCase();

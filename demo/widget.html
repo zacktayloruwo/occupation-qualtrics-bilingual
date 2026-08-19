@@ -42,7 +42,8 @@ const SPEC = {
   tomselect:  {dir:'noc5-bilingual-tomselect',  data:'noc2021_bilingual.js',            js:'occupation_selectize.js'},
   categories: {dir:'noc5-bilingual-categories', data:'noc2021_bilingual_categories.js', js:'occupation_categories.js'},
   keywords:   {dir:'noc5-bilingual-keywords',   data:'noc2021_bilingual_keywords.js',   js:'occupation_keywords.js'},
-  longlist:   {dir:'noc5-bilingual-longlist',   data:'noc2021_bilingual_longlist.js',   js:'occupation_longlist.js'}
+  longlist:   {dir:'noc5-bilingual-longlist',   data:'noc2021_bilingual_longlist.js',   js:'occupation_longlist.js'},
+  matches:    {dir:'noc5-bilingual-matches',    data:'noc2021_bilingual_matches.js',    js:'occupation_matches.js'}
 };
 
 /* Minimal stand-in for the Qualtrics survey engine, so the unmodified
@@ -71,6 +72,12 @@ function load(src){
 /* Row counts for the active language, reported back to the parent page so the
    figures shown are always computed from the data actually loaded. */
 function stats(){
+  if (WHICH === 'matches'){
+    const c = window.nocMatches || [];
+    const titles = c.reduce((n,x) => n + ((x['occupations_'+LANG]||[]).length), 0);
+    return {rows: c.length, detail: c.length.toLocaleString()+' categories shown, '
+                    + titles.toLocaleString()+' titles searched and shown as feedback'};
+  }
   if (WHICH === 'tomselect'){
     const c = window.categories || [];
     const titles = c.reduce((n,x) => n + ((x['occupations_'+LANG]||[]).length), 0);
