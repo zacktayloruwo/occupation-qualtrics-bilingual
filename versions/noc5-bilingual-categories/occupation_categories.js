@@ -193,7 +193,9 @@ Qualtrics.SurveyEngine.addOnload(function () {
             clearStyles.id = "occ-clear-styles";
             clearStyles.textContent =
                 ".occ-clear{-webkit-appearance:none !important;appearance:none !important;" +
-                "display:inline-block;margin-top:10px;padding:9px 16px !important;min-height:40px;" +
+                "display:block;width:-webkit-fit-content;width:fit-content;" +
+                "margin-top:10px;margin-left:auto;margin-right:0;" +
+                "padding:7px 13px !important;min-height:40px;" +
                 "font-family:inherit;font-size:14px;line-height:1.2;font-weight:500;" +
                 "color:#25292e !important;background:#fff !important;" +
                 "border:1px solid #b9bec7 !important;border-radius:6px !important;" +
@@ -201,7 +203,7 @@ Qualtrics.SurveyEngine.addOnload(function () {
                 ".occ-clear:hover{background:#f2f3f5 !important;border-color:#8f959e !important}" +
                 ".occ-clear:active{background:#e6e8ec !important}" +
                 ".occ-clear:focus-visible{outline:2px solid #1f4e79 !important;outline-offset:2px}" +
-                "@media (max-width:768px){.occ-clear{min-height:44px;padding:11px 18px !important;font-size:16px}}";
+                "@media (max-width:768px){.occ-clear{min-height:44px;padding:9px 15px !important;font-size:16px}}";
             document.head.appendChild(clearStyles);
         }
 

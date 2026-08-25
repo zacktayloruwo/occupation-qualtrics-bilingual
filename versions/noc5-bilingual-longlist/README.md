@@ -172,9 +172,13 @@ target Apple's HIG and WCAG 2.5.5 both ask for.
 
 The widget now adds an `occ-clear` class to whichever button it wires up and injects
 the styling itself, so nothing needs editing in the question HTML or repeating across
-language translations. Measured after the change: **69x40px on desktop, 77x44px on
-mobile**, with hover, active and keyboard-focus states, and the clear behaviour
-unchanged.
+language translations. Measured after the change: **63x40px on desktop, 71x44px on
+mobile**, right-aligned so its right edge lines up with the input's, with hover, active
+and keyboard-focus states, and the clear behaviour unchanged.
+
+Right alignment uses `display:block; width:fit-content; margin-left:auto` rather than a
+float, so nothing needs clearing afterwards. The `min-height` is what holds the tap
+target at 40/44px, so the padding can be tuned without dropping below it.
 
 The palette assumes a light survey theme (white fill, dark text, grey border). On a
 dark theme, override `.occ-clear` in Custom CSS — anything there wins, since the
