@@ -220,9 +220,33 @@ Qualtrics.SurveyEngine.addOnload(function () {
         }
 
         // ── Clear button ──────────────────────────────────────────────────────
+        // Qualtrics themes reset <button> to border:0, padding:0 and a transparent
+        // background, so an unstyled Clear renders as bare text about 31x16px -- it
+        // does not read as clickable and is far under the 44px tap target Apple's
+        // HIG and WCAG 2.5.5 ask for. Styling is injected here rather than left to
+        // Custom CSS so the version stays self-contained and works in every language
+        // translation without editing the question HTML.
+
+        if (!document.getElementById("occ-clear-styles")) {
+            var clearStyles = document.createElement("style");
+            clearStyles.id = "occ-clear-styles";
+            clearStyles.textContent =
+                ".occ-clear{-webkit-appearance:none !important;appearance:none !important;" +
+                "display:inline-block;margin-top:10px;padding:9px 16px !important;min-height:40px;" +
+                "font-family:inherit;font-size:14px;line-height:1.2;font-weight:500;" +
+                "color:#25292e !important;background:#fff !important;" +
+                "border:1px solid #b9bec7 !important;border-radius:6px !important;" +
+                "cursor:pointer;transition:background-color .12s ease,border-color .12s ease}" +
+                ".occ-clear:hover{background:#f2f3f5 !important;border-color:#8f959e !important}" +
+                ".occ-clear:active{background:#e6e8ec !important}" +
+                ".occ-clear:focus-visible{outline:2px solid #1f4e79 !important;outline-offset:2px}" +
+                "@media (max-width:768px){.occ-clear{min-height:44px;padding:11px 18px !important;font-size:16px}}";
+            document.head.appendChild(clearStyles);
+        }
 
         var clearBtn = qContainer.querySelector("#button-clear") || qContainer.querySelector("button");
         if (clearBtn) {
+            clearBtn.classList.add("occ-clear");
             clearBtn.addEventListener("click", function () {
                 control.clear();
                 storeSelection(null);

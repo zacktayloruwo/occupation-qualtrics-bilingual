@@ -135,6 +135,23 @@ Missing: window.nocMatches (add this version's data file to Look & Feel -> Heade
 
 Check the browser console first — that message names the exact fix.
 
+### The Clear button
+
+Qualtrics themes reset `<button>` to `border: 0`, `padding: 0` and a transparent
+background, so an unstyled Clear renders as bare text — measured at 31x16px on a
+fielded survey. It does not read as clickable, and 16px is far under the 44px tap
+target Apple's HIG and WCAG 2.5.5 both ask for.
+
+The widget now adds an `occ-clear` class to whichever button it wires up and injects
+the styling itself, so nothing needs editing in the question HTML or repeating across
+language translations. Measured after the change: **69x40px on desktop, 77x44px on
+mobile**, with hover, active and keyboard-focus states, and the clear behaviour
+unchanged.
+
+The palette assumes a light survey theme (white fill, dark text, grey border). On a
+dark theme, override `.occ-clear` in Custom CSS — anything there wins, since the
+injected block is a plain stylesheet rather than inline styles.
+
 ### Placeholder text
 
 The greyed-out prompt inside the box is set near the top of the widget script and is
