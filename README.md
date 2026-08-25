@@ -90,8 +90,8 @@ when a widget changes — you update one commit SHA in the header.
 Tom Select once. For the `matches` version:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@22a379df60954e171f1d26bff939b73492e40745/versions/noc5-bilingual-matches/noc2021_bilingual_matches.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@22a379df60954e171f1d26bff939b73492e40745/versions/noc5-bilingual-matches/occupation_matches.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@f1f02547ab0887f10628f652c169c23a1a6473db/versions/noc5-bilingual-matches/noc2021_bilingual_matches.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@f1f02547ab0887f10628f652c169c23a1a6473db/versions/noc5-bilingual-matches/occupation_matches.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
 ```
@@ -166,11 +166,11 @@ Pinned to `d2db22e`. Only the header needs these; the question stub is typed in 
 
 | Version | Files |
 |---|---|
-| `tomselect` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@22a379df60954e171f1d26bff939b73492e40745/versions/noc5-bilingual-tomselect/noc2021_bilingual.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@22a379df60954e171f1d26bff939b73492e40745/versions/noc5-bilingual-tomselect/occupation_selectize.js) |
-| `categories` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@22a379df60954e171f1d26bff939b73492e40745/versions/noc5-bilingual-categories/noc2021_bilingual_categories.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@22a379df60954e171f1d26bff939b73492e40745/versions/noc5-bilingual-categories/occupation_categories.js) |
-| `keywords` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@22a379df60954e171f1d26bff939b73492e40745/versions/noc5-bilingual-keywords/noc2021_bilingual_keywords.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@22a379df60954e171f1d26bff939b73492e40745/versions/noc5-bilingual-keywords/occupation_keywords.js) |
-| `longlist` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@22a379df60954e171f1d26bff939b73492e40745/versions/noc5-bilingual-longlist/noc2021_bilingual_longlist.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@22a379df60954e171f1d26bff939b73492e40745/versions/noc5-bilingual-longlist/occupation_longlist.js) |
-| `matches` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@22a379df60954e171f1d26bff939b73492e40745/versions/noc5-bilingual-matches/noc2021_bilingual_matches.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@22a379df60954e171f1d26bff939b73492e40745/versions/noc5-bilingual-matches/occupation_matches.js) |
+| `tomselect` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@f1f02547ab0887f10628f652c169c23a1a6473db/versions/noc5-bilingual-tomselect/noc2021_bilingual.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@f1f02547ab0887f10628f652c169c23a1a6473db/versions/noc5-bilingual-tomselect/occupation_selectize.js) |
+| `categories` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@f1f02547ab0887f10628f652c169c23a1a6473db/versions/noc5-bilingual-categories/noc2021_bilingual_categories.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@f1f02547ab0887f10628f652c169c23a1a6473db/versions/noc5-bilingual-categories/occupation_categories.js) |
+| `keywords` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@f1f02547ab0887f10628f652c169c23a1a6473db/versions/noc5-bilingual-keywords/noc2021_bilingual_keywords.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@f1f02547ab0887f10628f652c169c23a1a6473db/versions/noc5-bilingual-keywords/occupation_keywords.js) |
+| `longlist` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@f1f02547ab0887f10628f652c169c23a1a6473db/versions/noc5-bilingual-longlist/noc2021_bilingual_longlist.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@f1f02547ab0887f10628f652c169c23a1a6473db/versions/noc5-bilingual-longlist/occupation_longlist.js) |
+| `matches` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@f1f02547ab0887f10628f652c169c23a1a6473db/versions/noc5-bilingual-matches/noc2021_bilingual_matches.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@f1f02547ab0887f10628f652c169c23a1a6473db/versions/noc5-bilingual-matches/occupation_matches.js) |
 
 Pin a **full commit SHA**, never `@main`. jsDelivr caches `@main` aggressively, and a
 SHA also locks a fielded survey to an exact snapshot — which is what you want
