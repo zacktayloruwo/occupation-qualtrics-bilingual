@@ -168,6 +168,15 @@
 
         var control = new TomSelect(selectEl, {
             maxItems:    1,
+            // Keep the dropdown shut until the respondent actually types. Without
+            // this Tom Select opens the full list on focus, so an empty box shows
+            // an arbitrary first entry ("Legislators", the lowest NOC code) before
+            // anyone has expressed any intent.
+            openOnFocus: false,
+            onType: function (str) {
+                // Deleting back to an empty box closes it again.
+                if (!str) { this.close(); }
+            },
             placeholder:  PLACEHOLDER[currentLang] || PLACEHOLDER.EN,
             maxOptions:  MAX_OPTIONS,
             valueField:  "id",

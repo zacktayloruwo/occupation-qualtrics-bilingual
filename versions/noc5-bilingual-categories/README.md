@@ -269,6 +269,18 @@ Missing: window.nocMatches (add this version's data file to Look & Feel -> Heade
 
 Check the browser console first — that message names the exact fix.
 
+### The dropdown stays closed until typing
+
+Tom Select opens the full option list on focus by default, so clicking an empty box
+showed an arbitrary first entry — "Legislators" for the category-based versions, being
+the lowest NOC code — before the respondent had expressed any intent. `openOnFocus` is
+therefore `false`, and an `onType` handler closes the list again if they delete back to
+an empty box.
+
+Verified across all five versions: focusing an empty box leaves the dropdown
+`display: none` at zero height, typing opens it with the expected matches, deleting the
+text closes it, and re-focusing after a selection does not reopen it.
+
 ### The Clear button
 
 Qualtrics themes reset `<button>` to `border: 0`, `padding: 0` and a transparent
