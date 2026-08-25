@@ -10,11 +10,10 @@ Shows the same 516 category names as
 titles, and writes the same three embedded-data fields. The data file is byte-identical
 apart from the global variable name.
 
-Both versions use the same tiered relevance ranking, so comparing them isolates the
-feedback rather than confounding it with a scoring difference — verified across 396
-queries with zero ordering differences. See
-[Relevance ranking](../noc5-bilingual-tomselect/README.md#relevance-ranking-changed)
-for what that ranking does and why it replaced Tom Select's stock scoring.
+Both versions use the same tiered relevance ranking — verified across 396 queries with
+zero ordering differences — so comparing them isolates the feedback rather than
+confounding it with a scoring difference. That ranking is documented under
+[Relevance ranking](#relevance-ranking) below.
 
 The one difference: it **shows the respondent which occupation titles matched**,
 instead of matching against them invisibly.
@@ -23,11 +22,11 @@ instead of matching against them invisibly.
 
 ## Installing in Qualtrics
 
-The widget code is loaded once from the survey header; each question carries only a
-short stub. See [Installation](../../README.md#installation) in the root README for the
-full walkthrough, including the Survey Flow fields.
+Everything needed is on this page.
 
-**1 — Look & Feel → Header.** Paste as-is; these URLs are live and pinned.
+### 1. Look & Feel → Header
+
+Paste as-is. These URLs are live and pinned to commit `d2db22e`.
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-matches/noc2021_bilingual_matches.js"></script>
@@ -36,36 +35,90 @@ full walkthrough, including the Survey Flow fields.
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
 ```
 
-**2 — Question HTML** (in every language translation):
+Two files: the **data** and the **widget**. Each version defines different globals, so
+one version's files cannot stand in for another's. Fielding a second version means
+adding its two files here as well; Tom Select is only ever needed once.
+
+Pin a **full commit SHA**, never `@main` — jsDelivr caches `@main` aggressively, and a
+SHA locks a fielded survey to an exact snapshot. Note that a freshly pushed SHA can
+404 for a minute or two while jsDelivr fetches it from GitHub for the first time.
+
+### 2. Survey Flow
+
+Add an **Embedded Data** element **above the first block**. Placement matters: any
+element sitting between blocks disables the Back button on the block that follows it.
+
+Declare each field this version writes:
+
+- `__js_occupation_noc_code`
+- `__js_occupation_category_name`
+- `__js_occupation_lang`
+
+If you set a `fieldPrefix` in step 4, declare the prefixed names instead
+(`__js_myprefix_occupation_noc_code`, and so on).
+
+### 3. Question HTML
+
+Add to the question body — and to **every language translation** of it:
 
 ```html
 <select></select>
 <button type="button">Clear</button>
 ```
 
-**3 — Question JavaScript.** This is the whole thing:
+The `<select>` is where the dropdown renders. The button is optional; it is styled
+automatically and needs no class or id.
+
+### 4. Question JavaScript
+
+Select all in the editor, delete, and paste:
 
 ```js
 Qualtrics.SurveyEngine.addOnload(function () {
   window.occupationWidget.matches.init(this, {
     fieldPrefix: "",          // e.g. "matches_" if several versions share one survey
     forceLang:   null,        // "EN" or "FR" on a single-language survey
-    showSummary: true,       // the line above the box
-    showHints:   true,       // the per-row matched titles
-    maxSummary:  2,
-    maxHints:    2,
+    showSummary: true,
+    showHints:   true,
   });
 });
 ```
 
-Every option defaults to the value it had as a constant, so an empty `{}` behaves
-exactly as before. `placeholder: { EN: "...", FR: "..." }` overrides the prompt text,
-and `depsTimeoutMs` the 15-second dependency deadline.
+Delete any `addOnload` stub the editor pre-populates. Every option is optional and
+defaults to the value shown, so `init(this, {})` behaves exactly as documented here.
 
-> **Prefer to paste?** The whole widget file still works in the question editor —
-> paste its contents and append the same stub underneath. There is only one copy of
-> the logic either way. Hosting is recommended because updating five versions across
-> several questions by re-pasting is where stale scripts creep in.
+| Option | What it does | Default |
+|---|---|---|
+| `fieldPrefix` | prefix for field names and the session key | `""` |
+| `forceLang` | `"EN"`/`"FR"` on a single-language survey | `null` (auto-detect) |
+| `placeholder` | `{ EN, FR }` prompt inside the box | this version's text |
+| `depsTimeoutMs` | how long to wait for the CDN files | `15000` |
+| `showSummary` | the line above the box | `true` |
+| `showHints` | the per-row matched titles | `true` |
+| `maxSummary`, `maxHints` | titles named | `2` |
+| `minQueryLen` | before feedback shows | `2` |
+
+### 5. Publish and test
+
+Saving is not enough — **publish**, then open the published link in a **private
+window**. A private window matters: `sessionStorage` deliberately preserves a
+selection across reloads, which otherwise looks like a stale page.
+
+To confirm the current script is live, run this in the browser console on the survey:
+
+```js
+document.querySelector('select').tomselect.control_input.getAttribute('placeholder')
+```
+
+A string means the current script; `null` means the question is running older code.
+
+### Pasting instead of hosting
+
+Pasting still works: paste the full contents of `occupation_matches.js` into the question editor and
+append the same `addOnload` stub underneath. There is one copy of the logic either way.
+Hosting is recommended because re-pasting across several questions is where stale
+scripts creep in — a missed paste leaves a silently stale question that is hard to
+distinguish from a caching problem.
 
 ## Why
 
@@ -179,11 +232,77 @@ Note also that `type` fires on a 300 ms `refreshThrottle`, not on every keypress
 
 ### Mobile layout and the iOS zoom
 
-iOS Safari zooms in whenever a respondent taps the box, because Tom Select's input is
-13px and Safari force-zooms anything under 16px. That and the vertical-space CSS are
-survey-wide rather than version-specific — see
-[Mobile layout and the iOS zoom](../../README.md#mobile-layout-and-the-ios-zoom) in the
-root README.
+Paste into **Look & Feel → Style → Custom CSS**. These are Qualtrics-level settings and
+apply to the whole survey.
+
+```css
+/* The survey header holds only the <script> and <link> tags from step 1. They are
+   display:none, so the container renders as empty space below the logo. Collapse it,
+   and keep a modest padding on the logo rather than dropping to 0. */
+#header-container {
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+#logo-container {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+@media (max-width: 768px) {
+  /* iOS Safari force-zooms any input under 16px and never zooms back out.
+     Tom Select ships its input at 13px. */
+  .ts-control,
+  .ts-control input,
+  .ts-dropdown {
+    font-size: 16px !important;
+  }
+
+  .question-error-wrapper {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+  }
+  .question-display { margin-bottom: 4px !important; }
+  .occ-summary      { margin-bottom: 2px !important; }
+  nav#navigation {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+}
+
+/* Optional: smaller, tighter instruction text. */
+.question-display   { line-height: 1.25; }
+.question-display i { font-size: 75%; }
+```
+
+**Do not use the `user-scalable=no` viewport advice** you will find elsewhere for the
+zoom problem. iOS has ignored it since iOS 10, so it does not work, and to the extent
+`maximum-scale` still applies it blocks pinch-zoom for anyone who needs to magnify text.
+
+**These selectors are for the New Survey Taking Experience.** Most Qualtrics CSS advice
+online targets the classic skin — `.QuestionOuter`, `.QuestionBody`, `.SkinInner`,
+`.QuestionText` — which match *nothing* on a new-experience survey and fail silently.
+Check the inspector before assuming a rule is live.
+
+**Padding is not where the space goes.** Measured on a fielded question at 375x812, the
+control sat 291px down the screen. Trimming every padding that could safely be trimmed
+moved it up 12px; the italic instruction paragraph alone was 160px. Shrinking the
+instructions and dropping one `<br>` moved it to 198px. Note that `line-height` must be
+set on a **block** element — on an inline `<i>` it computes correctly but changes
+nothing, because the line box is governed by the containing block's strut:
+
+```html
+What is your occupation?<br>
+<div style="font-size:75%; line-height:1.2; font-style:italic">Please enter your job title…</div>
+```
+
+**Two things not to shrink.** `.ts-control` carries 8px of vertical padding and the
+NEXT button 14px; both are tap targets. The control is already 36px tall, below the
+44px Apple's HIG and WCAG 2.5.5 call for. `.plug-container` sits *below* the control,
+so trimming it does not help dropdown room.
 
 ### Running several versions in ONE survey: `fieldPrefix`
 
@@ -268,6 +387,57 @@ window.occupationWidget.matches.init(this, { forceLang: "FR" });
 Verified: with no override and no language signals the widget resolves to English;
 `"FR"` renders French regardless; `"EN"` holds English even with a stray
 `<html lang="fr">`. Auto-detection handles `fr`, `FR`, `fr-CA`, `FR-CA` and `fr_CA`.
+
+### Relevance ranking
+
+Tom Select's built-in score is effectively `constant / field length`. It matches each
+query token independently anywhere in a category's concatenated keyword blob, never
+checks whether the words appear together, and normalises by field length. Two
+consequences:
+
+- `nurse` matches `Nursery`, because matching is substring-based rather than word-based.
+- A category literally containing the title **Head nurse** was outranked by one
+  containing only *Head grower* and *Nursery manager*, purely because its keyword list
+  was longer.
+
+Measured with Tom Select's own scorer for the query `head nurse`:
+
+| Category | Keyword chars | Score | Contains "head nurse"? |
+|---|---|---|---|
+| Managers in horticulture | 397 | 0.00567 | no |
+| Nursing coordinators and supervisors | 799 | 0.00282 | **yes** |
+| Contractors and supervisors, landscaping… | 1,339 | 0.00168 | no |
+
+Score × keyword length is 2.251, 2.253 and 2.250 — identical. Match quality contributed
+nothing; length alone decided the order.
+
+This version now applies a tiered `score` callback. Highest tier first:
+
+1. whole phrase, as whole words, in the category name
+2. whole phrase, as whole words, in one occupation title
+3. whole phrase as a substring of a title (`nurse` inside `Nursery`)
+4. every token as a whole word within a single title
+5. every token as a whole word anywhere in the category
+6. matched only as scattered substrings
+
+The base score is added within a tier as a tie-breaker. Whole-word matching allows a
+trailing plural `s`/`es`, so `teacher` matches `teachers`; without that it matched
+`teacher assistants` but not `teachers`, promoting the wrong category. Restricting the
+suffix to `s`/`es` is what keeps `nurse` from matching `nursery`.
+
+**It reorders results; it never changes which categories match.** Verified across 748
+queries drawn from real occupation titles: zero differences in the matched set. The top
+result changed for 20% of them, and a hand-checked sample were all corrections:
+
+| Query | Was | Now |
+|---|---|---|
+| `head nurse` | Managers in horticulture | Nursing coordinators and supervisors |
+| `aerospace engineer` | Engineering managers | Aerospace engineers |
+| `occupational physician` | Registered nurses | Specialists in clinical and laboratory medicine |
+| `community health nurse` | Senior managers – health, education… | Registered nurses |
+| `public relations manager` | Managers in social, community and correctional services | Advertising, marketing and PR managers |
+
+Cost is roughly 0.7 ms per search over the 516 categories.
 
 ### Matching ignores accents and case
 

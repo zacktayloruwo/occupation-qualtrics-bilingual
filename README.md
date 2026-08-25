@@ -21,6 +21,7 @@ versions/
     <data>.js               Generated data file, served to Qualtrics via jsDelivr
     <widget>.js             The Qualtrics question JavaScript
   _template/              Starting point for a new version
+tools/                    Maintenance scripts (see Updating the pinned commit)
 LICENSE
 ```
 
@@ -181,6 +182,20 @@ serving the old file until you update the SHA.
 > Qualtrics will not either.
 
 ------------------------------------------------------------------------
+
+### Updating the pinned commit
+
+Each version README is self-contained, so the pinned SHA appears in several files.
+After pushing a commit that changes a data or widget file:
+
+```bash
+python3 tools/update_cdn_sha.py          # repoint every README at git HEAD
+python3 tools/update_cdn_sha.py --check  # report which SHAs are in use
+```
+
+`--check` warns if the READMEs have drifted onto different commits. Run the update
+*after* pushing — jsDelivr can only serve a commit GitHub already has, and a freshly
+pushed SHA may 404 for a minute or two on first request.
 
 ## Mobile layout and the iOS zoom
 

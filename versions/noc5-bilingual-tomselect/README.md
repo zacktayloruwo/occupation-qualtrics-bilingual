@@ -26,11 +26,11 @@ The widget is currently functional at <https://uwo.eu.qualtrics.com/jfe/form/SV_
 
 ## Installing in Qualtrics
 
-The widget code is loaded once from the survey header; each question carries only a
-short stub. See [Installation](../../README.md#installation) in the root README for the
-full walkthrough, including the Survey Flow fields.
+Everything needed is on this page.
 
-**1 — Look & Feel → Header.** Paste as-is; these URLs are live and pinned.
+### 1. Look & Feel → Header
+
+Paste as-is. These URLs are live and pinned to commit `d2db22e`.
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-tomselect/noc2021_bilingual.js"></script>
@@ -39,14 +39,43 @@ full walkthrough, including the Survey Flow fields.
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
 ```
 
-**2 — Question HTML** (in every language translation):
+Two files: the **data** and the **widget**. Each version defines different globals, so
+one version's files cannot stand in for another's. Fielding a second version means
+adding its two files here as well; Tom Select is only ever needed once.
+
+Pin a **full commit SHA**, never `@main` — jsDelivr caches `@main` aggressively, and a
+SHA locks a fielded survey to an exact snapshot. Note that a freshly pushed SHA can
+404 for a minute or two while jsDelivr fetches it from GitHub for the first time.
+
+### 2. Survey Flow
+
+Add an **Embedded Data** element **above the first block**. Placement matters: any
+element sitting between blocks disables the Back button on the block that follows it.
+
+Declare each field this version writes:
+
+- `__js_occupation_noc_code`
+- `__js_occupation_category_name`
+- `__js_occupation_lang`
+
+If you set a `fieldPrefix` in step 4, declare the prefixed names instead
+(`__js_myprefix_occupation_noc_code`, and so on).
+
+### 3. Question HTML
+
+Add to the question body — and to **every language translation** of it:
 
 ```html
 <select></select>
 <button type="button">Clear</button>
 ```
 
-**3 — Question JavaScript.** This is the whole thing:
+The `<select>` is where the dropdown renders. The button is optional; it is styled
+automatically and needs no class or id.
+
+### 4. Question JavaScript
+
+Select all in the editor, delete, and paste:
 
 ```js
 Qualtrics.SurveyEngine.addOnload(function () {
@@ -57,14 +86,37 @@ Qualtrics.SurveyEngine.addOnload(function () {
 });
 ```
 
-Every option defaults to the value it had as a constant, so an empty `{}` behaves
-exactly as before. `placeholder: { EN: "...", FR: "..." }` overrides the prompt text,
-and `depsTimeoutMs` the 15-second dependency deadline.
+Delete any `addOnload` stub the editor pre-populates. Every option is optional and
+defaults to the value shown, so `init(this, {})` behaves exactly as documented here.
 
-> **Prefer to paste?** The whole widget file still works in the question editor —
-> paste its contents and append the same stub underneath. There is only one copy of
-> the logic either way. Hosting is recommended because updating five versions across
-> several questions by re-pasting is where stale scripts creep in.
+| Option | What it does | Default |
+|---|---|---|
+| `fieldPrefix` | prefix for field names and the session key | `""` |
+| `forceLang` | `"EN"`/`"FR"` on a single-language survey | `null` (auto-detect) |
+| `placeholder` | `{ EN, FR }` prompt inside the box | this version's text |
+| `depsTimeoutMs` | how long to wait for the CDN files | `15000` |
+
+### 5. Publish and test
+
+Saving is not enough — **publish**, then open the published link in a **private
+window**. A private window matters: `sessionStorage` deliberately preserves a
+selection across reloads, which otherwise looks like a stale page.
+
+To confirm the current script is live, run this in the browser console on the survey:
+
+```js
+document.querySelector('select').tomselect.control_input.getAttribute('placeholder')
+```
+
+A string means the current script; `null` means the question is running older code.
+
+### Pasting instead of hosting
+
+Pasting still works: paste the full contents of `occupation_selectize.js` into the question editor and
+append the same `addOnload` stub underneath. There is one copy of the logic either way.
+Hosting is recommended because re-pasting across several questions is where stale
+scripts creep in — a missed paste leaves a silently stale question that is hard to
+distinguish from a caching problem.
 
 ## How It Works
 
@@ -143,26 +195,79 @@ Values are written immediately when the respondent makes or changes a selection 
 
 - Confirm you are using the current version of `occupation_selectize.js`, which uses `sessionStorage` to persist the selection across language re-renders.
 
-**Pulldown is cut off on mobile, or the browser zooms in when the box is tapped**
+### Mobile layout and the iOS zoom
 
-- See [Mobile layout and the iOS zoom](../../README.md#mobile-layout-and-the-ios-zoom)
-  in the root README for the current CSS and the measurements behind it.
+Paste into **Look & Feel → Style → Custom CSS**. These are Qualtrics-level settings and
+apply to the whole survey.
 
-- Two things worth knowing before you start trimming padding. First, iOS Safari
-  force-zooms any input smaller than 16px and never zooms back out; Tom Select ships
-  its input at 13px, so the fix is a font-size rule, not a viewport meta tag —
-  `user-scalable=no` has been ignored since iOS 10 and breaks pinch-zoom for anyone
-  who needs it. Second, padding is not where the space goes: on a measured question
-  trimming every safe padding moved the control up 12px, while shrinking the
-  instruction text moved it 65px.
+```css
+/* The survey header holds only the <script> and <link> tags from step 1. They are
+   display:none, so the container renders as empty space below the logo. Collapse it,
+   and keep a modest padding on the logo rather than dropping to 0. */
+#header-container {
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
 
-- The CSS previously published here targeted `.QuestionOuter`, `.QuestionBody`,
-  `.SkinInner` and `.QuestionText`. Those are **classic-skin** selectors and match
-  nothing on a New Survey Taking Experience survey, where the equivalents are
-  `.question-display` and `.question-error-wrapper`. If your survey uses the classic
-  skin the old names still apply — check the inspector rather than assuming.
+#logo-container {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
 
----
+@media (max-width: 768px) {
+  /* iOS Safari force-zooms any input under 16px and never zooms back out.
+     Tom Select ships its input at 13px. */
+  .ts-control,
+  .ts-control input,
+  .ts-dropdown {
+    font-size: 16px !important;
+  }
+
+  .question-error-wrapper {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+  }
+  .question-display { margin-bottom: 4px !important; }
+  .occ-summary      { margin-bottom: 2px !important; }
+  nav#navigation {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+}
+
+/* Optional: smaller, tighter instruction text. */
+.question-display   { line-height: 1.25; }
+.question-display i { font-size: 75%; }
+```
+
+**Do not use the `user-scalable=no` viewport advice** you will find elsewhere for the
+zoom problem. iOS has ignored it since iOS 10, so it does not work, and to the extent
+`maximum-scale` still applies it blocks pinch-zoom for anyone who needs to magnify text.
+
+**These selectors are for the New Survey Taking Experience.** Most Qualtrics CSS advice
+online targets the classic skin — `.QuestionOuter`, `.QuestionBody`, `.SkinInner`,
+`.QuestionText` — which match *nothing* on a new-experience survey and fail silently.
+Check the inspector before assuming a rule is live.
+
+**Padding is not where the space goes.** Measured on a fielded question at 375x812, the
+control sat 291px down the screen. Trimming every padding that could safely be trimmed
+moved it up 12px; the italic instruction paragraph alone was 160px. Shrinking the
+instructions and dropping one `<br>` moved it to 198px. Note that `line-height` must be
+set on a **block** element — on an inline `<i>` it computes correctly but changes
+nothing, because the line box is governed by the containing block's strut:
+
+```html
+What is your occupation?<br>
+<div style="font-size:75%; line-height:1.2; font-style:italic">Please enter your job title…</div>
+```
+
+**Two things not to shrink.** `.ts-control` carries 8px of vertical padding and the
+NEXT button 14px; both are tap targets. The control is already 36px tall, below the
+44px Apple's HIG and WCAG 2.5.5 call for. `.plug-container` sits *below* the control,
+so trimming it does not help dropdown room.
 
 ### Running several versions in ONE survey: `fieldPrefix`
 
