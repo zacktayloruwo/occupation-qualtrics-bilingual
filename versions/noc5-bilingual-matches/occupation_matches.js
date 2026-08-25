@@ -31,7 +31,10 @@ Qualtrics.SurveyEngine.addOnload(function () {
     var engine      = this;
     var qContainer  = this.getQuestionContainer();
     var questionId  = this.getQuestionInfo().QuestionID;
-    var SESSION_KEY = "occupation_noc_code";
+    // Distinct from the tomselect version's key. The two are near-identical and
+    // may well sit in the same survey; sharing a key would let a selection made
+    // in one silently pre-fill the other.
+    var SESSION_KEY = "occupation_matches_code";
 
     // Set to "EN" or "FR" on a survey that offers only ONE language and therefore
     // has no language selector. Left null, the language is auto-detected, which
