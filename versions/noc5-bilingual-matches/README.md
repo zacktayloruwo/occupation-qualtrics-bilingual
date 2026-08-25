@@ -5,11 +5,16 @@
 **Languages:** EN + FR
 **UI:** Tom Select single-select with visible match feedback
 
-Behaviourally identical to [`noc5-bilingual-tomselect`](../noc5-bilingual-tomselect/) —
-the same 516 category names are the only selectable rows, the same occupation titles
-are searched, matches are ordered by the same relevance score, and the same three
-embedded-data fields are written. The data file is byte-identical apart from the
-global variable name.
+Shows the same 516 category names as
+[`noc5-bilingual-tomselect`](../noc5-bilingual-tomselect/), searches the same occupation
+titles, and writes the same three embedded-data fields. The data file is byte-identical
+apart from the global variable name.
+
+> **Ranking now differs.** The tomselect version has been given a tiered relevance
+> score so that whole-phrase title matches outrank scattered substring hits; this
+> version still uses Tom Select's stock scoring. The two are therefore no longer
+> ordering-equivalent, which matters if they are being compared head to head. See
+> [Relevance ranking](../noc5-bilingual-tomselect/README.md#relevance-ranking-changed).
 
 The one difference: it **shows the respondent which occupation titles matched**,
 instead of matching against them invisibly.

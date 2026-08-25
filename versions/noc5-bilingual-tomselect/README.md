@@ -285,6 +285,57 @@ Missing: window.nocMatches (add this version's data file to Look & Feel -> Heade
 
 Check the browser console first — that message names the exact fix.
 
+### Relevance ranking (changed)
+
+Tom Select's built-in score is effectively `constant / field length`. It matches each
+query token independently anywhere in a category's concatenated keyword blob, never
+checks whether the words appear together, and normalises by field length. Two
+consequences:
+
+- `nurse` matches `Nursery`, because matching is substring-based rather than word-based.
+- A category literally containing the title **Head nurse** was outranked by one
+  containing only *Head grower* and *Nursery manager*, purely because its keyword list
+  was longer.
+
+Measured with Tom Select's own scorer for the query `head nurse`:
+
+| Category | Keyword chars | Score | Contains "head nurse"? |
+|---|---|---|---|
+| Managers in horticulture | 397 | 0.00567 | no |
+| Nursing coordinators and supervisors | 799 | 0.00282 | **yes** |
+| Contractors and supervisors, landscaping… | 1,339 | 0.00168 | no |
+
+Score × keyword length is 2.251, 2.253 and 2.250 — identical. Match quality contributed
+nothing; length alone decided the order.
+
+This version now applies a tiered `score` callback. Highest tier first:
+
+1. whole phrase, as whole words, in the category name
+2. whole phrase, as whole words, in one occupation title
+3. whole phrase as a substring of a title (`nurse` inside `Nursery`)
+4. every token as a whole word within a single title
+5. every token as a whole word anywhere in the category
+6. matched only as scattered substrings
+
+The base score is added within a tier as a tie-breaker. Whole-word matching allows a
+trailing plural `s`/`es`, so `teacher` matches `teachers`; without that it matched
+`teacher assistants` but not `teachers`, promoting the wrong category. Restricting the
+suffix to `s`/`es` is what keeps `nurse` from matching `nursery`.
+
+**It reorders results; it never changes which categories match.** Verified across 748
+queries drawn from real occupation titles: zero differences in the matched set. The top
+result changed for 20% of them, and a hand-checked sample were all corrections:
+
+| Query | Was | Now |
+|---|---|---|
+| `head nurse` | Managers in horticulture | Nursing coordinators and supervisors |
+| `aerospace engineer` | Engineering managers | Aerospace engineers |
+| `occupational physician` | Registered nurses | Specialists in clinical and laboratory medicine |
+| `community health nurse` | Senior managers – health, education… | Registered nurses |
+| `public relations manager` | Managers in social, community and correctional services | Advertising, marketing and PR managers |
+
+Cost is roughly 0.7 ms per search over the 516 categories.
+
 ### Single-language surveys: set `FORCE_LANG`
 
 Language detection only ever recognises French; anything it cannot positively
