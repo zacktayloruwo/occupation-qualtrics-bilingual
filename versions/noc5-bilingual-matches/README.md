@@ -152,6 +152,14 @@ is returned untouched, which is what keeps relevance ordering identical to tomse
 
 Note also that `type` fires on a 300 ms `refreshThrottle`, not on every keypress.
 
+### Mobile layout and the iOS zoom
+
+iOS Safari zooms in whenever a respondent taps the box, because Tom Select's input is
+13px and Safari force-zooms anything under 16px. That and the vertical-space CSS are
+survey-wide rather than version-specific — see
+[Mobile layout and the iOS zoom](../../README.md#mobile-layout-and-the-ios-zoom) in the
+root README.
+
 ### Running several versions in ONE survey: set `FIELD_PREFIX`
 
 Every version writes the same `__js_occupation_*` embedded-data field names, so two

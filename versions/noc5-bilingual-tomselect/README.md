@@ -235,39 +235,24 @@ Quel est votre occupation ?<br />
 
 - Confirm you are using the current version of `occupation_selectize.js`, which uses `sessionStorage` to persist the selection across language re-renders.
 
-**Too much vertical padding truncatres the pulldown on mobile**
+**Pulldown is cut off on mobile, or the browser zooms in when the box is tapped**
 
-- If the pulldown gets cut off, you can reduce the vertical padding on elements in the Qualtrics UX. This can be done globally by adding the following CSS to the ‘Custom CSS’ area in the Look and Feel / Style area:
+- See [Mobile layout and the iOS zoom](../../README.md#mobile-layout-and-the-ios-zoom)
+  in the root README for the current CSS and the measurements behind it.
 
-``` CSS
-@media (max-width: 768px) {
-  .QuestionOuter,
-  .QuestionBody,
-  .SkinInner,
-  .QuestionText {
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
-    margin-top: 4px !important;
-    margin-bottom: 4px !important;
-  }
-}
+- Two things worth knowing before you start trimming padding. First, iOS Safari
+  force-zooms any input smaller than 16px and never zooms back out; Tom Select ships
+  its input at 13px, so the fix is a font-size rule, not a viewport meta tag —
+  `user-scalable=no` has been ignored since iOS 10 and breaks pinch-zoom for anyone
+  who needs it. Second, padding is not where the space goes: on a measured question
+  trimming every safe padding moved the control up 12px, while shrinking the
+  instruction text moved it 65px.
 
-#logo-container {
-  height: 0 !important;
-  min-height: 0 !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  overflow: hidden !important;
-}
-
-#header-container {
-  height: 0 !important;
-  min-height: 0 !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  overflow: hidden !important;
-}
-```
+- The CSS previously published here targeted `.QuestionOuter`, `.QuestionBody`,
+  `.SkinInner` and `.QuestionText`. Those are **classic-skin** selectors and match
+  nothing on a New Survey Taking Experience survey, where the equivalents are
+  `.question-display` and `.question-error-wrapper`. If your survey uses the classic
+  skin the old names still apply — check the inspector rather than assuming.
 
 ---
 

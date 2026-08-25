@@ -91,6 +91,95 @@ Two things must be set, or the versions will quietly interfere with each other:
 
 ------------------------------------------------------------------------
 
+## Mobile layout and the iOS zoom
+
+Applies to every version — these are Qualtrics-level settings, not per-widget ones.
+Paste into **Look & Feel → Style → Custom CSS**.
+
+```css
+@media (max-width: 768px) {
+  /* Stop iOS Safari zooming in when the respondent taps the box.
+     Safari force-zooms any input under 16px, and never zooms back out.
+     Tom Select ships its input at 13px. */
+  .ts-control,
+  .ts-control input,
+  .ts-dropdown {
+    font-size: 16px !important;
+  }
+
+  /* Reclaim vertical space above the control. */
+  .question-error-wrapper {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+  }
+  .question-display { margin-bottom: 4px !important; }
+  .occ-summary      { margin-bottom: 2px !important; }
+  nav#navigation {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+}
+
+/* Optional: smaller, tighter instruction text. */
+.question-display   { line-height: 1.25; }
+.question-display i { font-size: 75%; }
+```
+
+### The selectors depend on which survey experience you are using
+
+The rules above target the **New Survey Taking Experience**: `.question-display`,
+`.question-error-wrapper`, `nav#navigation`. Most Qualtrics CSS advice online — and
+earlier versions of this README — targets the **classic** skin: `.QuestionOuter`,
+`.QuestionBody`, `.SkinInner`, `.QuestionText`. Those match *nothing* on a new-experience
+survey and fail silently. Confirm with the browser inspector before assuming a rule is
+live. `#logo-container` and `#header-container` exist in both, and are only worth
+zeroing out if a logo is actually configured.
+
+### Padding is not where the space goes
+
+Measured on a fielded question at 375×812, the input sat 291px down the screen.
+Trimming every padding that could safely be trimmed moved it up **12px**. The question
+text was doing the real damage:
+
+| Contributor | Vertical space |
+|---|---|
+| Italic instruction paragraph | 160px |
+| `<br><br>` gap | ~33px |
+| Version label | 22px |
+| Question stem | 22px |
+| Qualtrics chrome | 16px |
+
+Shrinking the instructions and dropping one `<br>` is worth far more:
+
+| Change | Input Y position |
+|---|---|
+| Baseline | 291px |
+| Instructions at 75%, line-height 1.2 | 226px |
+| Also a single `<br>` instead of `<br><br>` | 198px |
+
+Note that `line-height` must be set on a **block** element. Setting it on an inline
+`<i>` computes correctly but changes nothing on screen, because the line box height is
+governed by the containing block's strut. Wrap the instructions in a `<div>`:
+
+```html
+What is your occupation?<br>
+<div style="font-size:75%; line-height:1.2; font-style:italic">Please enter your job title…</div>
+```
+
+This matters more than the raw numbers suggest: with the iOS keyboard open the usable
+viewport falls to roughly 350px, so moving the control from 291px to 198px is the
+difference between two visible dropdown rows and six or seven.
+
+### Two things not to shrink
+
+`.ts-control` carries 8px of vertical padding, and the NEXT button 14px. Removing
+either reclaims a little space at the cost of the tap target. The control is already
+36px tall, below the 44px Apple's HIG and WCAG 2.5.5 both call for, so it should if
+anything grow. `.plug-container` ("Powered by Qualtrics") sits *below* the control, so
+trimming it does not help dropdown room; remove it in Look & Feel if your licence allows.
+
+------------------------------------------------------------------------
+
 ## Current header URLs
 
 Live, pinned URLs for each version — paste as-is. Only the **data file** is loaded from

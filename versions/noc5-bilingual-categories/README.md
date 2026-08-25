@@ -98,6 +98,14 @@ relevance ordering.
 `maxOptions` is `null`. With only 516 rows the whole list can be shown without a
 performance concern, unlike the longlist and keywords versions.
 
+### Mobile layout and the iOS zoom
+
+iOS Safari zooms in whenever a respondent taps the box, because Tom Select's input is
+13px and Safari force-zooms anything under 16px. That and the vertical-space CSS are
+survey-wide rather than version-specific — see
+[Mobile layout and the iOS zoom](../../README.md#mobile-layout-and-the-ios-zoom) in the
+root README.
+
 ### Running several versions in ONE survey: set `FIELD_PREFIX`
 
 Every version writes the same `__js_occupation_*` embedded-data field names, so two
