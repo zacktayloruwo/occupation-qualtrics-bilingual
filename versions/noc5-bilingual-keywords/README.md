@@ -33,11 +33,11 @@ Everything needed is on this page.
 
 ### 1. Look & Feel → Header
 
-Paste as-is. These URLs are live and pinned to commit `d2db22e`.
+Paste as-is. These URLs are live and pinned to commit `22a379d`.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-keywords/noc2021_bilingual_keywords.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-keywords/occupation_keywords.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@22a379df60954e171f1d26bff939b73492e40745/versions/noc5-bilingual-keywords/noc2021_bilingual_keywords.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@22a379df60954e171f1d26bff939b73492e40745/versions/noc5-bilingual-keywords/occupation_keywords.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
 ```
