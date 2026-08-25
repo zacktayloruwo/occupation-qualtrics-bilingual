@@ -77,6 +77,20 @@ A caution carried over from the original build: the EN and FR illustrative-examp
 
 ------------------------------------------------------------------------
 
+## Running more than one version in a single survey
+
+Two things must be set, or the versions will quietly interfere with each other:
+
+1. **Add every version's data file to the header.** They define different globals
+   (`window.categories`, `window.nocMatches`, …) and cannot substitute for one another.
+   A version whose data file is missing logs a console error after 15 seconds naming
+   the missing global.
+2. **Set `FIELD_PREFIX` in each widget script** (e.g. `"matches_"`). Otherwise all
+   versions write the same `__js_occupation_*` fields and the last answer wins. Add the
+   prefixed field names to the Survey Flow.
+
+------------------------------------------------------------------------
+
 ## Current header URLs
 
 Live, pinned URLs for each version — paste as-is. Only the **data file** is loaded from

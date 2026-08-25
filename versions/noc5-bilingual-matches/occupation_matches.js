@@ -34,7 +34,15 @@ Qualtrics.SurveyEngine.addOnload(function () {
     // Distinct from the tomselect version's key. The two are near-identical and
     // may well sit in the same survey; sharing a key would let a selection made
     // in one silently pre-fill the other.
-    var SESSION_KEY = "occupation_matches_code";
+    // Prefix for the embedded-data field names and the sessionStorage key. Leave
+    // empty on a survey that fields ONE version. Set it (e.g. "matches_") when
+    // several versions appear in the SAME survey, otherwise they all write the
+    // same __js_occupation_* fields and whichever the respondent answers last
+    // overwrites the others. Fields become __js_<prefix>occupation_noc_code, and
+    // each prefixed name must be added to the Survey Flow.
+    var FIELD_PREFIX = "";
+
+    var SESSION_KEY = FIELD_PREFIX + "occupation_matches_code";
 
     // Set to "EN" or "FR" on a survey that offers only ONE language and therefore
     // has no language selector. Left null, the language is auto-detected, which
@@ -49,12 +57,29 @@ Qualtrics.SurveyEngine.addOnload(function () {
     var MAX_HINTS      = 2;      // titles named per dropdown row
     var MIN_QUERY_LEN  = 2;      // below this, feedback stays hidden
 
+    // Poll for the CDN dependencies, but give up rather than hang silently. A
+    // missing data file is the most common setup mistake -- the header was not
+    // updated for this version -- and without this the widget just sits there
+    // with no error at all.
+    var DEPS_TIMEOUT_MS = 15000;
+
     function waitForDeps(fn) {
-        if (window.nocMatches && window.nocMatches.length && typeof TomSelect !== "undefined") {
-            fn();
-        } else {
-            setTimeout(function () { waitForDeps(fn); }, 50);
-        }
+        // Wall-clock, not a tick counter: browsers throttle setTimeout to about
+        // one second in a backgrounded tab, so counting 50 ms per tick would
+        // stretch a 15 s deadline into minutes for anyone who switches away.
+        var started = Date.now();
+        (function poll() {
+            if (window.nocMatches && window.nocMatches.length && typeof TomSelect !== "undefined") { fn(); return; }
+            if (Date.now() - started >= DEPS_TIMEOUT_MS) {
+                console.error("[occupation-matches] dependencies never loaded after " + (DEPS_TIMEOUT_MS / 1000) +
+                    "s. Missing: " +
+                    [!(window.nocMatches) ? "window.nocMatches (add this version's data file to Look & Feel -> Header)" : null,
+                     (typeof TomSelect === "undefined") ? "TomSelect" : null]
+                        .filter(Boolean).join(", "));
+                return;
+            }
+            setTimeout(poll, 50);
+        })();
     }
 
     waitForDeps(function () {
@@ -172,9 +197,9 @@ Qualtrics.SurveyEngine.addOnload(function () {
 
         function storeSelection(code, lang, options) {
             var opt = options[code];
-            Qualtrics.SurveyEngine.setJSEmbeddedData("occupation_noc_code",      code || "");
-            Qualtrics.SurveyEngine.setJSEmbeddedData("occupation_category_name", opt ? opt.label : "");
-            Qualtrics.SurveyEngine.setJSEmbeddedData("occupation_lang",          lang);
+            Qualtrics.SurveyEngine.setJSEmbeddedData(FIELD_PREFIX + "occupation_noc_code",      code || "");
+            Qualtrics.SurveyEngine.setJSEmbeddedData(FIELD_PREFIX + "occupation_category_name", opt ? opt.label : "");
+            Qualtrics.SurveyEngine.setJSEmbeddedData(FIELD_PREFIX + "occupation_lang",          lang);
 
             if (code) {
                 sessionStorage.setItem(SESSION_KEY, code);

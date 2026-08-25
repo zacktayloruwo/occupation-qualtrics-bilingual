@@ -26,7 +26,15 @@ Qualtrics.SurveyEngine.addOnload(function () {
     var engine      = this;
     var qContainer  = this.getQuestionContainer();
     var questionId  = this.getQuestionInfo().QuestionID;
-    var SESSION_KEY = "occupation_longlist_selection";
+    // Prefix for the embedded-data field names and the sessionStorage key. Leave
+    // empty on a survey that fields ONE version. Set it (e.g. "matches_") when
+    // several versions appear in the SAME survey, otherwise they all write the
+    // same __js_occupation_* fields and whichever the respondent answers last
+    // overwrites the others. Fields become __js_<prefix>occupation_noc_code, and
+    // each prefixed name must be added to the Survey Flow.
+    var FIELD_PREFIX = "";
+
+    var SESSION_KEY = FIELD_PREFIX + "occupation_longlist_selection";
 
     // Set to "EN" or "FR" on a survey that offers only ONE language and therefore
     // has no language selector. Left null, the language is auto-detected, which
@@ -44,12 +52,29 @@ Qualtrics.SurveyEngine.addOnload(function () {
 
     // ── Wait for CDN dependencies ─────────────────────────────────────────────
 
+    // Poll for the CDN dependencies, but give up rather than hang silently. A
+    // missing data file is the most common setup mistake -- the header was not
+    // updated for this version -- and without this the widget just sits there
+    // with no error at all.
+    var DEPS_TIMEOUT_MS = 15000;
+
     function waitForDeps(fn) {
-        if (window.nocLonglist && window.nocLonglist.EN && typeof TomSelect !== "undefined") {
-            fn();
-        } else {
-            setTimeout(function () { waitForDeps(fn); }, 50);
-        }
+        // Wall-clock, not a tick counter: browsers throttle setTimeout to about
+        // one second in a backgrounded tab, so counting 50 ms per tick would
+        // stretch a 15 s deadline into minutes for anyone who switches away.
+        var started = Date.now();
+        (function poll() {
+            if (window.nocLonglist && window.nocLonglist.EN && typeof TomSelect !== "undefined") { fn(); return; }
+            if (Date.now() - started >= DEPS_TIMEOUT_MS) {
+                console.error("[occupation-longlist] dependencies never loaded after " + (DEPS_TIMEOUT_MS / 1000) +
+                    "s. Missing: " +
+                    [!(window.nocLonglist) ? "window.nocLonglist (add this version's data file to Look & Feel -> Header)" : null,
+                     (typeof TomSelect === "undefined") ? "TomSelect" : null]
+                        .filter(Boolean).join(", "));
+                return;
+            }
+            setTimeout(poll, 50);
+        })();
     }
 
     waitForDeps(function () {
@@ -119,11 +144,11 @@ Qualtrics.SurveyEngine.addOnload(function () {
         // language switch cannot silently rewrite their answer.
 
         function storeSelection(sel) {
-            Qualtrics.SurveyEngine.setJSEmbeddedData("occupation_noc_code",       sel ? sel.code    : "");
-            Qualtrics.SurveyEngine.setJSEmbeddedData("occupation_category_name",  sel ? sel.catName : "");
-            Qualtrics.SurveyEngine.setJSEmbeddedData("occupation_selected_label", sel ? sel.label   : "");
-            Qualtrics.SurveyEngine.setJSEmbeddedData("occupation_selected_type",  sel ? sel.type    : "");
-            Qualtrics.SurveyEngine.setJSEmbeddedData("occupation_lang",           sel ? sel.lang    : "");
+            Qualtrics.SurveyEngine.setJSEmbeddedData(FIELD_PREFIX + "occupation_noc_code",       sel ? sel.code    : "");
+            Qualtrics.SurveyEngine.setJSEmbeddedData(FIELD_PREFIX + "occupation_category_name",  sel ? sel.catName : "");
+            Qualtrics.SurveyEngine.setJSEmbeddedData(FIELD_PREFIX + "occupation_selected_label", sel ? sel.label   : "");
+            Qualtrics.SurveyEngine.setJSEmbeddedData(FIELD_PREFIX + "occupation_selected_type",  sel ? sel.type    : "");
+            Qualtrics.SurveyEngine.setJSEmbeddedData(FIELD_PREFIX + "occupation_lang",           sel ? sel.lang    : "");
 
             if (sel) {
                 sessionStorage.setItem(SESSION_KEY, JSON.stringify(sel));

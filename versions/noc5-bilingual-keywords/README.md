@@ -113,6 +113,35 @@ list starts at `Abattoir manager` and the respondent must type something more
 specific. If this proves a problem in testing, either raise `MAX_OPTIONS` or float
 prefix matches ahead of the rest and alphabetise within each group.
 
+### Running several versions in ONE survey: set `FIELD_PREFIX`
+
+Every version writes the same `__js_occupation_*` embedded-data field names, so two
+versions in the same survey overwrite each other and you record one answer instead of
+two. Set a prefix at the top of each widget script:
+
+```js
+var FIELD_PREFIX = "matches_";   // "" when the survey fields only one version
+```
+
+Fields then become `__js_matches_occupation_noc_code` and so on, and the prefix is
+applied to the `sessionStorage` key too. **Add each prefixed name to the Survey Flow.**
+
+Verified with two versions on one page: six distinct fields, two distinct session
+keys, both answers preserved independently.
+
+### If the dropdown never appears
+
+Each version needs **its own data file** in `Look & Feel → Header`; they define
+different globals and one cannot substitute for another. If the data file is missing,
+the widget waits 15 seconds and then logs, for example:
+
+```
+[occupation-matches] dependencies never loaded after 15s.
+Missing: window.nocMatches (add this version's data file to Look & Feel -> Header)
+```
+
+Check the browser console first — that message names the exact fix.
+
 ### Single-language surveys: set `FORCE_LANG`
 
 Language detection only ever recognises French; anything it cannot positively
