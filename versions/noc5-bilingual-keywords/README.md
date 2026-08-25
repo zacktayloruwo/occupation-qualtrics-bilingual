@@ -33,11 +33,11 @@ Everything needed is on this page.
 
 ### 1. Look & Feel → Header
 
-Paste as-is. These URLs are live and pinned to commit `f1f0254`.
+Paste as-is. These URLs are live and pinned to commit `5e420b1`.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@f1f02547ab0887f10628f652c169c23a1a6473db/versions/noc5-bilingual-keywords/noc2021_bilingual_keywords.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@f1f02547ab0887f10628f652c169c23a1a6473db/versions/noc5-bilingual-keywords/occupation_keywords.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@5e420b183bda469f84cf9d9bdb8a50049422d594/versions/noc5-bilingual-keywords/noc2021_bilingual_keywords.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@5e420b183bda469f84cf9d9bdb8a50049422d594/versions/noc5-bilingual-keywords/occupation_keywords.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
 ```
@@ -298,7 +298,15 @@ header — same global name, same structure, French dropped:
 | `noc2021_bilingual_keywords.js` | 603 KB |
 | `noc2021_en_keywords.js` | **265 KB** |
 
-Swap the data `<script>` in step 1; **nothing else changes**. The widget file, the
+Swap the data `<script>` in step 1; **nothing else changes**.
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@5e420b183bda469f84cf9d9bdb8a50049422d594/versions/noc5-bilingual-keywords/noc2021_en_keywords.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@5e420b183bda469f84cf9d9bdb8a50049422d594/versions/noc5-bilingual-keywords/occupation_keywords.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
+```
+ The widget file, the
 question stub and the embedded data are all identical.
 
 Both files come from the same prep script, so they cannot drift.
