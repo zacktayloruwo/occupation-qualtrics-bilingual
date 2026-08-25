@@ -18,20 +18,38 @@
 //   <select></select>
 //   <button type="button">Clear / Effacer</button>  (optional)
 
-Qualtrics.SurveyEngine.addOnload(function () {
-    var engine      = this;
-    var qContainer  = this.getQuestionContainer();
-    var questionId  = this.getQuestionInfo().QuestionID;
+(function () {
+    "use strict";
+
+    // Registered on a namespace rather than calling addOnload directly, so this
+    // file can be hosted on a CDN and loaded once from Look & Feel -> Header.
+    // A remote script that called addOnload itself would register too late to be
+    // picked up. The question JavaScript is a stub that calls init():
+    //
+    //   Qualtrics.SurveyEngine.addOnload(function () {
+    //     window.occupationWidget.categories.init(this, { fieldPrefix: "" });
+    //   });
+    //
+    // Pasting this whole file into the question editor still works -- append the
+    // same stub after it. Either way there is one copy of the logic.
+
+    window.occupationWidget = window.occupationWidget || {};
+
+    window.occupationWidget.categories = { init: function (engine, options) {
+
+    options = options || {};
+    var qContainer  = engine.getQuestionContainer();
+    var questionId  = engine.getQuestionInfo().QuestionID;
     // Prefix for the embedded-data field names and the sessionStorage key. Leave
     // empty on a survey that fields ONE version. Set it (e.g. "matches_") when
     // several versions appear in the SAME survey, otherwise they all write the
     // same __js_occupation_* fields and whichever the respondent answers last
     // overwrites the others. Fields become __js_<prefix>occupation_noc_code, and
     // each prefixed name must be added to the Survey Flow.
-    var FIELD_PREFIX = "";
+    var FIELD_PREFIX = options.fieldPrefix || "";
 
     // Greyed-out prompt inside the box. Set to "" to show none.
-    var PLACEHOLDER = { EN: "Search occupation categories",
+    var PLACEHOLDER = options.placeholder || { EN: "Search occupation categories",
                         FR: "Rechercher une catégorie professionnelle" };
 
     var SESSION_KEY = FIELD_PREFIX + "occupation_categories_code";
@@ -41,13 +59,13 @@ Qualtrics.SurveyEngine.addOnload(function () {
     // resolves to English whenever French cannot be positively identified -- so a
     // French-only survey that exposes neither Q_Language nor <html lang="fr">
     // would silently render in English. Setting this removes the guesswork.
-    var FORCE_LANG = null;
+    var FORCE_LANG = options.forceLang || null;
 
     // Poll for the CDN dependencies, but give up rather than hang silently. A
     // missing data file is the most common setup mistake -- the header was not
     // updated for this version -- and without this the widget just sits there
     // with no error at all.
-    var DEPS_TIMEOUT_MS = 15000;
+    var DEPS_TIMEOUT_MS = options.depsTimeoutMs || 15000;
 
     function waitForDeps(fn) {
         // Wall-clock, not a tick counter: browsers throttle setTimeout to about
@@ -216,4 +234,6 @@ Qualtrics.SurveyEngine.addOnload(function () {
             });
         }
     });
-});
+}};
+
+})();
