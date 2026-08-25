@@ -336,6 +336,18 @@ result changed for 20% of them, and a hand-checked sample were all corrections:
 
 Cost is roughly 0.7 ms per search over the 516 categories.
 
+### Placeholder text
+
+The greyed-out prompt inside the box is set near the top of the widget script and is
+language-aware:
+
+```js
+var PLACEHOLDER = { EN: "Enter your job title",
+                    FR: "Entrez votre titre d'emploi" };
+```
+
+Set either to `""` for no placeholder.
+
 ### Single-language surveys: set `FORCE_LANG`
 
 Language detection only ever recognises French; anything it cannot positively

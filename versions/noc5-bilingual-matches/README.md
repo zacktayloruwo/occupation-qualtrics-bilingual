@@ -10,11 +10,11 @@ Shows the same 516 category names as
 titles, and writes the same three embedded-data fields. The data file is byte-identical
 apart from the global variable name.
 
-> **Ranking now differs.** The tomselect version has been given a tiered relevance
-> score so that whole-phrase title matches outrank scattered substring hits; this
-> version still uses Tom Select's stock scoring. The two are therefore no longer
-> ordering-equivalent, which matters if they are being compared head to head. See
-> [Relevance ranking](../noc5-bilingual-tomselect/README.md#relevance-ranking-changed).
+Both versions use the same tiered relevance ranking, so comparing them isolates the
+feedback rather than confounding it with a scoring difference — verified across 396
+queries with zero ordering differences. See
+[Relevance ranking](../noc5-bilingual-tomselect/README.md#relevance-ranking-changed)
+for what that ranking does and why it replaced Tom Select's stock scoring.
 
 The one difference: it **shows the respondent which occupation titles matched**,
 instead of matching against them invisibly.
@@ -193,6 +193,18 @@ Missing: window.nocMatches (add this version's data file to Look & Feel -> Heade
 ```
 
 Check the browser console first — that message names the exact fix.
+
+### Placeholder text
+
+The greyed-out prompt inside the box is set near the top of the widget script and is
+language-aware:
+
+```js
+var PLACEHOLDER = { EN: "Enter your job title",
+                    FR: "Entrez votre titre d'emploi" };
+```
+
+Set either to `""` for no placeholder.
 
 ### Single-language surveys: set `FORCE_LANG`
 

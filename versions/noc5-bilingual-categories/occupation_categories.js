@@ -30,6 +30,10 @@ Qualtrics.SurveyEngine.addOnload(function () {
     // each prefixed name must be added to the Survey Flow.
     var FIELD_PREFIX = "";
 
+    // Greyed-out prompt inside the box. Set to "" to show none.
+    var PLACEHOLDER = { EN: "Search occupation categories",
+                        FR: "Rechercher une catégorie professionnelle" };
+
     var SESSION_KEY = FIELD_PREFIX + "occupation_categories_code";
 
     // Set to "EN" or "FR" on a survey that offers only ONE language and therefore
@@ -138,6 +142,7 @@ Qualtrics.SurveyEngine.addOnload(function () {
 
         var control = new TomSelect(selectEl, {
             maxItems:    1,
+            placeholder:  PLACEHOLDER[currentLang] || PLACEHOLDER.EN,
             maxOptions:  null,          // only ~516 rows, so never truncate
             valueField:  "id",
             labelField:  "label",

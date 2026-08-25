@@ -42,6 +42,10 @@ Qualtrics.SurveyEngine.addOnload(function () {
     // each prefixed name must be added to the Survey Flow.
     var FIELD_PREFIX = "";
 
+    // Greyed-out prompt inside the box. Set to "" to show none.
+    var PLACEHOLDER = { EN: "Enter your job title",
+                        FR: "Entrez votre titre d'emploi" };
+
     var SESSION_KEY = FIELD_PREFIX + "occupation_matches_code";
 
     // Set to "EN" or "FR" on a survey that offers only ONE language and therefore
@@ -181,6 +185,89 @@ Qualtrics.SurveyEngine.addOnload(function () {
             bestOverall = hits.slice(0, MAX_SUMMARY).map(function (h) { return h.title; });
         }
 
+        // ── Relevance ranking ─────────────────────────────────────────────────
+        // Tom Select's built-in score is (constant / field length): it matches each
+        // query token independently anywhere in a category's concatenated keyword
+        // blob, ignores whether the words appear together, and normalises by field
+        // length. Two consequences, both bad here:
+        //
+        //   * "nurse" matches "Nursery", because matching is substring-based rather
+        //     than word-based.
+        //   * A category literally containing the title "Head nurse" is outranked by
+        //     one that merely contains "Head grower" and "Nursery manager", purely
+        //     because its keyword list is longer.
+        //
+        // Measured before this change, the query "head nurse" returned
+        // "Managers in horticulture" first and "Nursing coordinators and
+        // supervisors" second. Ranking below is tiered so that a whole-word match on
+        // the complete phrase beats scattered substring hits. Items that matched
+        // before still match -- only their order changes.
+
+
+        function isWordChar(ch) {
+            return !!ch && /[a-z0-9]/.test(ch);
+        }
+
+        // `needle` occurs in `hay` as a whole word: preceded by a non-word character
+        // and followed by one, allowing only a plural "s"/"es" to trail. The plural
+        // allowance matters because NOC category names are plural while respondents
+        // type the singular -- without it "teacher" whole-word-matches "teacher
+        // assistants" but not "teachers", pushing the assistants category above the
+        // teachers one. Restricting the suffix to s/es keeps "nurse" from matching
+        // "nursery", which is the behaviour this ranking exists to fix.
+        function hasWholeWord(hay, needle) {
+            var from = 0, i, after;
+            while ((i = hay.indexOf(needle, from)) !== -1) {
+                if (!isWordChar(hay.charAt(i - 1))) {
+                    after = i + needle.length;
+                    if (!isWordChar(hay.charAt(after))) return true;
+                    if (hay.charAt(after) === "s" && !isWordChar(hay.charAt(after + 1))) return true;
+                    if (hay.substr(after, 2) === "es" && !isWordChar(hay.charAt(after + 2))) return true;
+                }
+                from = i + 1;
+            }
+            return false;
+        }
+
+        // Folded label, individual titles and a joined blob, per category code.
+        var searchIndex = {};
+        window.nocMatches.forEach(function (cat) {
+            var titles = (cat["occupations_" + currentLang] || []).map(fold);
+            searchIndex[cat.category_code] = {
+                label:  fold(cat["category_" + currentLang] || cat["category_EN"]),
+                titles: titles,
+                blob:   titles.join(" ")
+            };
+        });
+
+        function tierFor(code, phrase, tokens) {
+            var idx = searchIndex[code];
+            if (!idx) return 1;
+
+            // 6 — the whole phrase, as whole words, in the category name itself.
+            if (hasWholeWord(idx.label, phrase)) return 6;
+
+            var i;
+            // 5 — the whole phrase, as whole words, in one occupation title.
+            for (i = 0; i < idx.titles.length; i++) {
+                if (hasWholeWord(idx.titles[i], phrase)) return 5;
+            }
+            // 4 — the whole phrase as a substring of a title ("nurse" in "Nursery").
+            for (i = 0; i < idx.titles.length; i++) {
+                if (idx.titles[i].indexOf(phrase) !== -1) return 4;
+            }
+            // 3 — every token as a whole word, all within a SINGLE title.
+            for (i = 0; i < idx.titles.length; i++) {
+                var title = idx.titles[i];
+                if (tokens.every(function (t) { return hasWholeWord(title, t); })) return 3;
+            }
+            // 2 — every token as a whole word, anywhere in the category.
+            if (tokens.every(function (t) { return hasWholeWord(idx.blob, t) || hasWholeWord(idx.label, t); })) return 2;
+
+            // 1 — matched only as scattered substrings.
+            return 1;
+        }
+
         // ── Option builder (unchanged from tomselect) ─────────────────────────
 
         function buildOptions(lang) {
@@ -233,6 +320,7 @@ Qualtrics.SurveyEngine.addOnload(function () {
 
         var control = new TomSelect(selectEl, {
             maxItems:    1,
+            placeholder:  PLACEHOLDER[currentLang] || PLACEHOLDER.EN,
             valueField:  "code",
             labelField:  "label",
             searchField: ["label", "keywords"],
@@ -253,7 +341,19 @@ Qualtrics.SurveyEngine.addOnload(function () {
                     if (typeof control.clearCache === "function") control.clearCache();
                     else control.renderCache = { item: {}, option: {} };
                 }
-                return this.getScoreFunction(search);
+                // Same tiered ranking as noc5-bilingual-tomselect, so the two stay
+                // ordering-equivalent and comparing them isolates the feedback
+                // rather than confounding it with a scoring difference.
+                var baseScore = this.getScoreFunction(search);
+                var phrase    = fold(q).trim().replace(/\s+/g, " ");
+                var tokens    = phrase ? phrase.split(" ") : [];
+
+                return function (item) {
+                    var base = baseScore(item);
+                    if (!base) return 0;              // unchanged: non-matches stay out
+                    if (!phrase) return base;
+                    return tierFor(item.code, phrase, tokens) + base;
+                };
             },
             render: SHOW_HINTS ? {
                 option: function (data, escape) {

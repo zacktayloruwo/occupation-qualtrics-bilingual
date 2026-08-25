@@ -135,6 +135,18 @@ Missing: window.nocMatches (add this version's data file to Look & Feel -> Heade
 
 Check the browser console first — that message names the exact fix.
 
+### Placeholder text
+
+The greyed-out prompt inside the box is set near the top of the widget script and is
+language-aware:
+
+```js
+var PLACEHOLDER = { EN: "Search occupation categories",
+                    FR: "Rechercher une catégorie professionnelle" };
+```
+
+Set either to `""` for no placeholder.
+
 ### Single-language surveys: set `FORCE_LANG`
 
 Language detection only ever recognises French; anything it cannot positively

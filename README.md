@@ -97,6 +97,23 @@ Applies to every version — these are Qualtrics-level settings, not per-widget 
 Paste into **Look & Feel → Style → Custom CSS**.
 
 ```css
+/* The survey header holds only the <script> and <link> tags pasted into
+   Look & Feel -> Header. They are display:none, so the container renders
+   80px of pure empty space below the logo. Collapse it, and keep a modest
+   padding on the logo itself rather than dropping to 0. */
+#header-container {
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+#logo-container {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
 @media (max-width: 768px) {
   /* Stop iOS Safari zooming in when the respondent taps the box.
      Safari force-zooms any input under 16px, and never zooms back out.
@@ -124,6 +141,25 @@ Paste into **Look & Feel → Style → Custom CSS**.
 .question-display   { line-height: 1.25; }
 .question-display i { font-size: 75%; }
 ```
+
+### The empty header is the biggest single win
+
+Measured on a fielded survey at 375x812, the question text began 151px down. The
+breakdown was 67px of logo container (16px padding, a 35px logo, 16px padding) and
+**80px of `#header-container` holding nothing but the script tags** — its inner
+`#header` div measures 0px. Collapsing that empty container and choosing a logo
+padding:
+
+| Logo padding | Question text starts at |
+|---|---|
+| current (16px, header not collapsed) | 151px |
+| 0px | 39px |
+| 6px | 51px |
+| **10px (recommended)** | **59px** |
+| 14px | 67px |
+
+Collapsing the container cannot stop the scripts running: they execute when the
+browser parses them, long before CSS affects layout.
 
 ### The selectors depend on which survey experience you are using
 
