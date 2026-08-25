@@ -68,3 +68,16 @@ writeLines(
 )
 
 message("wrote noc2021_bilingual_categories.js")
+
+# English-only build ----
+# Drops the FR element. The widget resolves window.nocCategories[lang] and falls
+# back to .EN, so this is a drop-in replacement in the header.
+
+writeLines(
+  paste0("window.nocCategories = window.nocCategories || ",
+         toJSON(list(EN = categories_en), dataframe = "rows", pretty = FALSE, auto_unbox = TRUE), ";"),
+  here::here("versions", VERSION, "noc2021_en_categories.js"),
+  useBytes = TRUE
+)
+
+message("wrote noc2021_en_categories.js")

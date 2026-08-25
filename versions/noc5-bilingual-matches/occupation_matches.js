@@ -165,7 +165,7 @@
 
         var titleIndex = [];
         window.nocMatches.forEach(function (cat) {
-            var titles = cat["occupations_" + currentLang] || [];
+            var titles = cat["occupations_" + currentLang] || cat["occupations_EN"] || [];
             for (var i = 0; i < titles.length; i++) {
                 titleIndex.push({ code: cat.category_code, title: titles[i], folded: fold(titles[i]) });
             }
@@ -255,7 +255,7 @@
         // Folded label, individual titles and a joined blob, per category code.
         var searchIndex = {};
         window.nocMatches.forEach(function (cat) {
-            var titles = (cat["occupations_" + currentLang] || []).map(fold);
+            var titles = (cat["occupations_" + currentLang] || cat["occupations_EN"] || []).map(fold);
             searchIndex[cat.category_code] = {
                 label:  fold(cat["category_" + currentLang] || cat["category_EN"]),
                 titles: titles,
@@ -298,7 +298,7 @@
                 return {
                     code:     cat.category_code,
                     label:    cat["category_" + lang] || cat["category_EN"],
-                    keywords: (cat["occupations_" + lang] || []).join(" ")
+                    keywords: (cat["occupations_" + lang] || cat["occupations_EN"] || []).join(" ")
                 };
             });
         }

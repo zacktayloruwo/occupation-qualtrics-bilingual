@@ -129,7 +129,7 @@
                 return {
                     code:     cat.category_code,
                     label:    cat["category_" + lang] || cat["category_EN"],
-                    keywords: (cat["occupations_" + lang] || []).join(" ")
+                    keywords: (cat["occupations_" + lang] || cat["occupations_EN"] || []).join(" ")
                 };
             });
         }

@@ -269,6 +269,32 @@ Missing: window.nocMatches (add this version's data file to Look & Feel -> Heade
 
 Check the browser console first — that message names the exact fix.
 
+### English-only data build
+
+French accounts for roughly 60% of the bilingual data file, and an English-only survey
+downloads all of it for nothing. `noc2021_en_categories.js` is a drop-in replacement in the
+header — same global name, same structure, French dropped:
+
+| File | Over the wire (gzip) |
+|---|---|
+| `noc2021_bilingual_categories.js` | 19 KB |
+| `noc2021_en_categories.js` | **8 KB** |
+
+Swap the data `<script>` in step 1; **nothing else changes**. The widget file, the
+question stub and the embedded data are all identical.
+
+Both files come from the same prep script, so they cannot drift.
+
+> **Only for surveys that will never offer French.** The widget falls back to the
+> English fields when a French one is absent, so nothing breaks if French is somehow
+> selected — but the respondent would see English occupation names under French
+> interface text. Pair this with `forceLang: "EN"`. If French is a possibility, keep the
+> bilingual file.
+
+Verified against the English-only build: all five versions return the same match
+counts as the bilingual file (15 / 5 / 153 / 158 / 15 for "nurse"), with the same
+embedded data and, for this version, the same per-row examples.
+
 ### The dropdown stays closed until typing
 
 Tom Select opens the full option list on focus by default, so clicking an empty box

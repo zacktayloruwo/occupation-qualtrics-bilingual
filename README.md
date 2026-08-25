@@ -198,6 +198,39 @@ python3 tools/update_cdn_sha.py --check  # report which SHAs are in use
 *after* pushing — jsDelivr can only serve a commit GitHub already has, and a freshly
 pushed SHA may 404 for a minute or two on first request.
 
+### English-only data builds
+
+Each version also ships an English-only data file. French is roughly 60% of the
+bilingual payload, so an English-only survey waits on a download it never uses:
+
+| Version | Bilingual (gzip) | English-only (gzip) |
+|---|---|---|
+| `tomselect` | 466 KB | **185 KB** |
+| `matches` | 466 KB | **185 KB** |
+| `keywords` | 603 KB | **265 KB** |
+| `longlist` | 641 KB | **283 KB** |
+| `categories` | 19 KB | **8 KB** |
+
+They are drop-in replacements — same global name, same structure — so only the data
+`<script>` in the header changes. Widget file, question stub and embedded data are
+identical. Both builds come from the same prep script and cannot drift.
+
+Use them only where French will never be offered, and pair with `forceLang: "EN"`.
+The widget falls back to the English fields if French is somehow selected, so nothing
+breaks, but the respondent would see English occupation names under French interface
+text.
+
+**Where the first-load lag comes from.** The non-network cost is negligible — building
+the options takes about 3 ms and Tom Select initialises in about 2 ms. It is all
+download. The survey header sits outside the region Qualtrics swaps between pages, so
+header scripts load once at survey start and persist; putting anything ahead of the
+occupation question (consent, instructions) lets that download finish while the
+respondent reads, and the widget is ready when they arrive. A survey fielding two
+versions loads two data files, which is why an English-only build is worth roughly half
+a megabyte there.
+
+------------------------------------------------------------------------
+
 ## Mobile layout and the iOS zoom
 
 Applies to every version — these are Qualtrics-level settings, not per-widget ones.

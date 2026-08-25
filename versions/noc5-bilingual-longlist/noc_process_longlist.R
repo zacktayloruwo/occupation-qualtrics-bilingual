@@ -122,3 +122,20 @@ writeLines(
 )
 
 message("wrote noc2021_bilingual_longlist.js")
+
+# English-only build ----
+# Drops the FR rows and the French half of the category lookup. The widget falls
+# back to the English entries when a French one is absent, so this is a drop-in
+# replacement in the header for an English-only survey.
+
+categories_map_en <- lapply(categories_map, function(x) list(EN = x$EN))
+
+writeLines(
+  paste0("window.nocLonglist = window.nocLonglist || ",
+         toJSON(list(categories = categories_map_en, EN = longlist_en),
+                dataframe = "rows", pretty = FALSE, auto_unbox = TRUE), ";"),
+  here::here("versions", VERSION, "noc2021_en_longlist.js"),
+  useBytes = TRUE
+)
+
+message("wrote noc2021_en_longlist.js")

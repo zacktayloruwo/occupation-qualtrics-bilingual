@@ -111,3 +111,22 @@ writeLines(
 )
 
 message("wrote noc2021_bilingual_matches.js")
+
+# English-only build ----
+# Same structure and the same global name, with the French half dropped. The
+# widget falls back to the English fields when a French one is absent, so this
+# file is a drop-in replacement in the header for an English-only survey. It is
+# roughly a third of the size: French accounts for about 63% of the bilingual
+# file, which is all download the respondent waits through for nothing.
+
+en_only <- bilingual_tbl |>
+  select(category_code, category_EN, occupations_EN)
+
+writeLines(
+  paste0("window.nocMatches = window.nocMatches || ",
+         toJSON(en_only, dataframe = "rows", pretty = FALSE, auto_unbox = TRUE), ";"),
+  here::here("versions", "noc5-bilingual-matches", "noc2021_en_matches.js"),
+  useBytes = TRUE
+)
+
+message("wrote noc2021_en_matches.js")
