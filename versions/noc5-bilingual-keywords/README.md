@@ -27,6 +27,20 @@ categories version's 5 plus this version's 153.
 
 ---
 
+## Header to paste into Qualtrics
+
+**Look & Feel → Header**, copy this exactly. These URLs are live and pinned to commit
+`492a26d` — paste them as-is, there is nothing to fill in.
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-keywords/noc2021_bilingual_keywords.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
+```
+
+The question JavaScript is **not** loaded from a URL — open the widget file in this
+folder and paste its full contents into the question's JavaScript editor.
+
 ## Data prep
 
 Run `noc_process_keywords.R` from anywhere inside the project. It reads the shared
@@ -73,7 +87,7 @@ Identical to the tomselect version except for the header scripts and the questio
 JavaScript. See that version's README for the Qualtrics steps in full.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@COMMIT-SHA/versions/noc5-bilingual-keywords/noc2021_bilingual_keywords.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-keywords/noc2021_bilingual_keywords.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
 ```

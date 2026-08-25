@@ -77,12 +77,44 @@ A caution carried over from the original build: the EN and FR illustrative-examp
 
 ------------------------------------------------------------------------
 
+## Current header URLs
+
+Live, pinned URLs for each version — paste as-is. Only the **data file** is loaded from
+a URL; the widget script is pasted directly into the question's JavaScript editor.
+
+| Version | Data file URL (`Look & Feel → Header`) |
+|---|---|
+| `noc5-bilingual-tomselect` | <https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-tomselect/noc2021_bilingual.js> |
+| `noc5-bilingual-categories` | <https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-categories/noc2021_bilingual_categories.js> |
+| `noc5-bilingual-keywords` | <https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-keywords/noc2021_bilingual_keywords.js> |
+| `noc5-bilingual-longlist` | <https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-longlist/noc2021_bilingual_longlist.js> |
+| `noc5-bilingual-matches` | <https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-matches/noc2021_bilingual_matches.js> |
+
+Every version also needs Tom Select, which is the same two lines regardless:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
+```
+
+All five were verified returning HTTP 200 with `Content-Type: application/javascript`
+at commit `492a26d`.
+
+> **If the browser console shows a 404 plus "Refused to execute ... X-Content-Type-Options:
+> nosniff"**, the URL is wrong. jsDelivr answers a bad path with an HTML error page, and
+> because that is not a script MIME type the browser refuses to run it. The usual cause is
+> pasting a template URL containing `YOUR-USERNAME`, `YOUR-REPO` or `COMMIT-SHA` instead of
+> a real one, or a commit SHA that predates the file. Open the URL directly in a browser: if
+> you do not see JavaScript, Qualtrics will not either.
+
+------------------------------------------------------------------------
+
 ## CDN hosting
 
 Generated data files are too large to paste into the Qualtrics header, so they are served from this repository via jsDelivr:
 
 ```         
-https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@COMMIT-SHA/versions/<version-name>/<data-file>.js
+https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/<version-name>/<data-file>.js
 ```
 
 Pin a **full commit SHA** rather than `@main`. jsDelivr caches `@main` aggressively, so a SHA is the only reliable way to guarantee a survey serves the file you just pushed. It also means each fielded survey is locked to an exact data snapshot, which is what you want mid-collection.

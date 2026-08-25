@@ -7,12 +7,12 @@ editor_options:
 
 # noc5-bilingual-tomselect
 
+Bilingual Occupation Selector for Qualtrics
+
 **Status:** In production
 **NOC level:** 5-digit unit group (~500 categories)
 **Languages:** EN + FR
 **UI:** Tom Select single-select
-
-# Bilingual Occupation Selector for Qualtrics
 
 Zack Taylor, University of Western Ontario, zack.taylor\@uwo.ca
 
@@ -21,6 +21,22 @@ August 19, 2026
 A bilingual (English/French) occupation search widget for Qualtrics surveys, programmed in JS. Respondents type to search for their occupation and select from a dropdown. The widget stores the National Occupational Classification (NOC) 2021 code and category name as embedded data.
 
 The widget is currently functional at <https://uwo.eu.qualtrics.com/jfe/form/SV_esdkA30l2ejov1Y>.
+
+------------------------------------------------------------------------
+
+## Header to paste into Qualtrics
+
+**Look & Feel → Header**, copy this exactly. These URLs are live and pinned to commit
+`492a26d` — paste them as-is, there is nothing to fill in.
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-tomselect/noc2021_bilingual.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
+```
+
+The question JavaScript is **not** loaded from a URL — open the widget file in this
+folder and paste its full contents into the question's JavaScript editor.
 
 ------------------------------------------------------------------------
 
@@ -92,20 +108,20 @@ Values are written immediately when the respondent makes or changes a selection 
 3.  Your CDN URL will be:
 
     ```         
-    https://cdn.jsdelivr.net/gh/YOUR-USERNAME/YOUR-REPO@COMMIT-SHA/versions/noc5-bilingual-tomselect/noc2021_bilingual.js
+    https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-tomselect/noc2021_bilingual.js
     ```
 
     It is stored on Zack Taylor's GitHub at:
 
     ```         
-    https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@COMMIT-SHA/versions/noc5-bilingual-tomselect/noc2021_bilingual.js
+    https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-tomselect/noc2021_bilingual.js
     ```
 
 4.  Using a commit SHA instead of `@main` prevents stale cache issues on jsDelivr, and locks a fielded survey to an exact data snapshot.
 
 > **Path change:** This file previously lived at the repository root, served as `@main/noc2021_bilingual.js`. That URL no longer resolves — surveys pointing at it must be updated to the versioned path above.
 
-> **Cache note:** If you update the file, push a new commit and update the SHA in the URL. To force jsDelivr to serve a fresh copy immediately, visit: `https://purge.jsdelivr.net/gh/YOUR-USERNAME/YOUR-REPO@main/versions/noc5-bilingual-tomselect/noc2021_bilingual.js`
+> **Cache note:** If you update the file, push a new commit and update the SHA in the URL. To force jsDelivr to serve a fresh copy immediately, visit: `https://purge.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@main/versions/noc5-bilingual-tomselect/noc2021_bilingual.js`
 
 ------------------------------------------------------------------------
 
@@ -115,7 +131,7 @@ Values are written immediately when the respondent makes or changes a selection 
 2.  Paste the following, replacing the jsDelivr URL with your own from Step 1:
 
 ``` html
-<script src="https://cdn.jsdelivr.net/gh/YOUR-USERNAME/YOUR-REPO@COMMIT-SHA/versions/noc5-bilingual-tomselect/noc2021_bilingual.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-tomselect/noc2021_bilingual.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
 ```
