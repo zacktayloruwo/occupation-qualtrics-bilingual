@@ -9,7 +9,8 @@
 //
 // Two feedback mechanisms, either can be switched off below:
 //
-//   SHOW_SUMMARY  a line above the dropdown naming the closest matching
+//   SHOW_SUMMARY  (off by default; pass showSummary: true to enable)
+//                 a line above the dropdown naming the closest matching
 //                 occupation titles overall ("Closest examples: Head nurse,
 //                 Assistant head nurse"). Answers "did it understand me?"
 //
@@ -73,7 +74,8 @@
     // would silently render in English. Setting this removes the guesswork.
     var FORCE_LANG = options.forceLang || null;
 
-    var SHOW_SUMMARY   = options.showSummary !== false;   // the line above the dropdown
+    var SHOW_SUMMARY   = options.showSummary === true;   // line above the box, OFF by default
+                                                     // (pass showSummary: true to restore it)
     var SHOW_HINTS     = options.showHints !== false;   // the per-row "e.g." line
     var MAX_SUMMARY    = options.maxSummary || 2;      // titles named in the summary line
     var MAX_HINTS      = options.maxHints || 2;      // titles named per dropdown row
@@ -142,8 +144,11 @@
         var currentLang = getCurrentLang();
 
         var TEXT = {
-            EN: { closest: "Closest examples: ", none: "No matching occupation examples" },
-            FR: { closest: "Exemples les plus proches : ", none: "Aucun exemple d'emploi correspondant" }
+            EN: { closest: "Closest examples: ", none: "No matching occupation examples",
+                  examples: "Examples: " },
+            // French typography puts a space before a colon.
+            FR: { closest: "Exemples les plus proches : ", none: "Aucun exemple d'emploi correspondant",
+                  examples: "Exemples : " }
         }[currentLang];
 
         // ── Accent- and case-insensitive folding ──────────────────────────────
@@ -326,7 +331,8 @@
                 ".occ-summary{font-size:13px;line-height:1.45;margin:0 0 6px;min-height:19px;color:#444}" +
                 ".occ-summary .occ-none{color:#8a8f98;font-style:italic}" +
                 ".occ-summary b{font-weight:600}" +
-                ".occ-hint{display:block;font-size:12px;color:#6b7280;margin-top:2px}";
+                ".occ-hint{display:block;font-size:12px;color:#6b7280;margin-top:2px}" +
+                ".occ-hint-label{color:#4b5563;font-weight:600}";
             document.head.appendChild(st);
         }
 
@@ -389,7 +395,9 @@
                     var hits = byCategory[data.code];
                     var html = "<div>" + escape(data.label);
                     if (hits && hits.length) {
-                        html += '<span class="occ-hint">' + escape(hits.join(", ")) + "</span>";
+                        html += '<span class="occ-hint">' +
+                                '<span class="occ-hint-label">' + escape(TEXT.examples) + "</span>" +
+                                escape(hits.join(", ")) + "</span>";
                     }
                     return html + "</div>";
                 }

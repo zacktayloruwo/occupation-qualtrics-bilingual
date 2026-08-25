@@ -78,7 +78,7 @@ Qualtrics.SurveyEngine.addOnload(function () {
   window.occupationWidget.matches.init(this, {
     fieldPrefix: "",          // e.g. "matches_" if several versions share one survey
     forceLang:   null,        // "EN" or "FR" on a single-language survey
-    showSummary: true,
+    showSummary: false,     // the line above the box; off by default
     showHints:   true,
   });
 });
@@ -93,7 +93,7 @@ defaults to the value shown, so `init(this, {})` behaves exactly as documented h
 | `forceLang` | `"EN"`/`"FR"` on a single-language survey | `null` (auto-detect) |
 | `placeholder` | `{ EN, FR }` prompt inside the box | this version's text |
 | `depsTimeoutMs` | how long to wait for the CDN files | `15000` |
-| `showSummary` | the line above the box | `true` |
+| `showSummary` | the line above the box | `false` |
 | `showHints` | the per-row matched titles | `true` |
 | `maxSummary`, `maxHints` | titles named | `2` |
 | `minQueryLen` | before feedback shows | `2` |
@@ -142,30 +142,39 @@ between them.
 
 ---
 
-## Two feedback mechanisms
+## How the feedback appears
 
-Both are on by default and each can be switched off at the top of
-`occupation_matches.js`.
+Each row in the dropdown carries a muted second line naming the occupation titles from
+*that* category which matched what was typed:
 
-**`SHOW_SUMMARY`** — a line above the box naming the closest matching titles overall:
+| Row | Second line |
+|---|---|
+| Plumbers | **Examples:** Plumber, Plumber apprentice |
+| Contractors and supervisors, pipefitting trades | **Examples:** Plumbers supervisor, Plumber foreman/woman |
+| Construction trades helpers and labourers | **Examples:** Plumber helper |
 
-> Closest examples: **Head nurse**, **Assistant head nurse**
+Same three answers the fielded version gives, but the respondent can now tell them
+apart. The label is language-aware — `Examples:` in English, `Exemples :` in French,
+with the space before the colon French typography expects.
 
-This answers *"did it understand what I typed?"*. When nothing matches it says so
-("No matching occupation examples"), which is useful negative feedback the fielded
-version never gives.
+Controlled by `showHints` (default `true`) and `maxHints` (default `2`).
 
-**`SHOW_HINTS`** — a muted second line on each dropdown row naming the titles from
-*that* category which matched. This answers *"why is this row here, and does it cover
-my job?"*.
+### The summary line is off by default
 
-The summary alone was the original proposal, and it is worth keeping, but it can only
-describe the single best match across the whole list. The per-row hints are what make
-a list of similar-sounding categories decidable, because the question a respondent
-actually has to answer is per-row. Recommend fielding with both; drop `SHOW_SUMMARY`
-first if the layout is too tall on mobile.
+An earlier design also put a line **above** the box naming the closest matching titles
+overall ("Closest examples: Head nurse, Assistant head nurse"). It is still available
+but no longer shown, because the per-row labels answer the same question in the place
+the respondent is actually looking, and the extra line cost vertical space that matters
+on a phone.
 
----
+To bring it back:
+
+```js
+window.occupationWidget.matches.init(this, { showSummary: true });
+```
+
+With it enabled, a query matching nothing reports "No matching occupation examples" —
+useful negative feedback the fielded version never gives.
 
 ## What this exposes about the fielded version
 

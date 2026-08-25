@@ -140,7 +140,8 @@ Qualtrics.SurveyEngine.addOnload(function () {
 | `placeholder` | all | per-version `{EN, FR}` |
 | `depsTimeoutMs` | all | `15000` |
 | `maxOptions` | keywords, longlist | `200` |
-| `showSummary`, `showHints` | matches | `true` |
+| `showHints` | matches | `true` |
+| `showSummary` | matches | `false` (the line above the box) |
 | `maxSummary`, `maxHints` | matches | `2` |
 
 ### 5. Publish
