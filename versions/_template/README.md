@@ -22,16 +22,24 @@ Describe any version-specific filtering, aggregation, or recoding here.
 |---|---|
 | `__js_...` |  |
 
-## Installation
+## Installing in Qualtrics
 
-1. Push and derive the jsDelivr URL from the commit SHA (see the root README).
-2. Header scripts:
+See [Installation](../../README.md#installation) in the root README for the full
+walkthrough. Version-specific parts:
+
+**Header** — this version's data file and widget file, plus Tom Select:
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@COMMIT-SHA/versions/<version-name>/<data-file>.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@COMMIT-SHA/versions/<version-name>/<widget-file>.js"></script>
 ```
 
-3. Question HTML (add to every language translation).
-4. Question JavaScript: paste `<widget>.js`.
+**Question JavaScript** — a stub naming this version:
+
+```js
+Qualtrics.SurveyEngine.addOnload(function () {
+  window.occupationWidget.<key>.init(this, { fieldPrefix: "", forceLang: null });
+});
+```
 
 ## Notes / known issues

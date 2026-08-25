@@ -21,19 +21,51 @@ instead of matching against them invisibly.
 
 ---
 
-## Header to paste into Qualtrics
+## Installing in Qualtrics
 
-**Look & Feel → Header**, copy this exactly. These URLs are live and pinned to commit
-`492a26d` — paste them as-is, there is nothing to fill in.
+The widget code is loaded once from the survey header; each question carries only a
+short stub. See [Installation](../../README.md#installation) in the root README for the
+full walkthrough, including the Survey Flow fields.
+
+**1 — Look & Feel → Header.** Paste as-is; these URLs are live and pinned.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-matches/noc2021_bilingual_matches.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-matches/noc2021_bilingual_matches.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-matches/occupation_matches.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
 ```
 
-The question JavaScript is **not** loaded from a URL — open the widget file in this
-folder and paste its full contents into the question's JavaScript editor.
+**2 — Question HTML** (in every language translation):
+
+```html
+<select></select>
+<button type="button">Clear</button>
+```
+
+**3 — Question JavaScript.** This is the whole thing:
+
+```js
+Qualtrics.SurveyEngine.addOnload(function () {
+  window.occupationWidget.matches.init(this, {
+    fieldPrefix: "",          // e.g. "matches_" if several versions share one survey
+    forceLang:   null,        // "EN" or "FR" on a single-language survey
+    showSummary: true,       // the line above the box
+    showHints:   true,       // the per-row matched titles
+    maxSummary:  2,
+    maxHints:    2,
+  });
+});
+```
+
+Every option defaults to the value it had as a constant, so an empty `{}` behaves
+exactly as before. `placeholder: { EN: "...", FR: "..." }` overrides the prompt text,
+and `depsTimeoutMs` the 15-second dependency deadline.
+
+> **Prefer to paste?** The whole widget file still works in the question editor —
+> paste its contents and append the same stub underneath. There is only one copy of
+> the logic either way. Hosting is recommended because updating five versions across
+> several questions by re-pasting is where stale scripts creep in.
 
 ## Why
 
@@ -130,18 +162,6 @@ drove a selection, that is a small addition — say the word.
 
 ---
 
-## Installation
-
-```html
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-matches/noc2021_bilingual_matches.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
-```
-
-Question JavaScript: paste `occupation_matches.js`. The question body HTML and the
-Survey Flow fields are **unchanged from tomselect** — the feedback element and its
-CSS are created by the script, so nothing needs editing in the Qualtrics editor.
-
 ---
 
 ## Implementation notes
@@ -165,21 +185,22 @@ survey-wide rather than version-specific — see
 [Mobile layout and the iOS zoom](../../README.md#mobile-layout-and-the-ios-zoom) in the
 root README.
 
-### Running several versions in ONE survey: set `FIELD_PREFIX`
+### Running several versions in ONE survey: `fieldPrefix`
 
 Every version writes the same `__js_occupation_*` embedded-data field names, so two
-versions in the same survey overwrite each other and you record one answer instead of
-two. Set a prefix at the top of each widget script:
+versions in one survey overwrite each other and you record one answer instead of two.
+Pass a prefix in the question stub:
 
 ```js
-var FIELD_PREFIX = "matches_";   // "" when the survey fields only one version
+window.occupationWidget.matches.init(this, { fieldPrefix: "matches_" });
 ```
 
-Fields then become `__js_matches_occupation_noc_code` and so on, and the prefix is
-applied to the `sessionStorage` key too. **Add each prefixed name to the Survey Flow.**
+Fields become `__js_matches_occupation_noc_code` and so on, and the prefix applies to
+the `sessionStorage` key too, so one question cannot pre-fill another. **Add each
+prefixed name to the Survey Flow.** Leave it out entirely on a single-version survey.
 
-Verified with two versions on one page: six distinct fields, two distinct session
-keys, both answers preserved independently.
+Verified with all five versions on one page: 18 fields across five namespaces, no
+collisions, and every field blank after clearing.
 
 ### If the dropdown never appears
 
@@ -217,40 +238,36 @@ injected block is a plain stylesheet rather than inline styles.
 
 ### Placeholder text
 
-The greyed-out prompt inside the box is set near the top of the widget script and is
-language-aware:
+The greyed-out prompt inside the box is language-aware and set in the stub:
 
 ```js
-var PLACEHOLDER = { EN: "Enter your job title",
-                    FR: "Entrez votre titre d'emploi" };
+window.occupationWidget.matches.init(this, {
+  placeholder: { EN: "Enter your job title", FR: "Entrez votre titre d'emploi" }
+});
 ```
 
-Set either to `""` for no placeholder.
+Omit it for the version's default, or pass `{ EN: "", FR: "" }` for none. The
+`categories` version defaults to "Search occupation categories" instead, because
+typing a job title there matches nothing by design.
 
-### Single-language surveys: set `FORCE_LANG`
+### Single-language surveys: `forceLang`
 
-Language detection only ever recognises French; anything it cannot positively
-identify as French becomes English. The widget has no way to see which languages
-the survey actually offers, so it cannot fall back to "whichever language remains".
+Language detection only ever recognises French; anything it cannot positively identify
+as French becomes English. The widget cannot see which languages the survey offers, so
+it cannot fall back to "whichever language remains".
 
-On a bilingual survey this is fine. On a survey offering only ONE language, and
-therefore having no language selector:
-
-- **English-only** works correctly, because English is the fallback.
-- **French-only** works only if Qualtrics exposes `Q_Language=FR` in the URL or
-  `<html lang="fr">`. If neither is present the widget renders in **English** and
-  records `__js_occupation_lang` as `EN`, silently.
-
-Set `FORCE_LANG` at the top of the widget script to remove the guesswork:
+That is fine on a bilingual survey and correct on an English-only one. On a
+**French-only** survey it works only if Qualtrics exposes `Q_Language=FR` or
+`<html lang="fr">`; if neither is present the widget renders in **English** and records
+`__js_occupation_lang` as `EN`, silently. Remove the guesswork:
 
 ```js
-var FORCE_LANG = "FR";   // or "EN"; null means auto-detect
+window.occupationWidget.matches.init(this, { forceLang: "FR" });
 ```
 
-Verified: with `FORCE_LANG` unset and no language signals present, the widget resolves
-to English; set to `"FR"` it renders French regardless; set to `"EN"` it stays English
-even when `<html lang="fr">` is present. Auto-detection handles `fr`, `FR`, `fr-CA`,
-`FR-CA` and `fr_CA`.
+Verified: with no override and no language signals the widget resolves to English;
+`"FR"` renders French regardless; `"EN"` holds English even with a stray
+`<html lang="fr">`. Auto-detection handles `fr`, `FR`, `fr-CA`, `FR-CA` and `fr_CA`.
 
 ### Matching ignores accents and case
 

@@ -77,17 +77,108 @@ A caution carried over from the original build: the EN and FR illustrative-examp
 
 ------------------------------------------------------------------------
 
-## Running more than one version in a single survey
+## Installation
 
-Two things must be set, or the versions will quietly interfere with each other:
+The widget code and its data are loaded **once from the survey header**. Each question
+carries only a short stub naming the version and its options. Nothing needs re-pasting
+when a widget changes — you update one commit SHA in the header.
 
-1. **Add every version's data file to the header.** They define different globals
-   (`window.categories`, `window.nocMatches`, …) and cannot substitute for one another.
-   A version whose data file is missing logs a console error after 15 seconds naming
-   the missing global.
-2. **Set `FIELD_PREFIX` in each widget script** (e.g. `"matches_"`). Otherwise all
-   versions write the same `__js_occupation_*` fields and the last answer wins. Add the
-   prefixed field names to the Survey Flow.
+### 1. Header
+
+**Look & Feel → Header.** Add the pair of files for each version you are fielding, plus
+Tom Select once. For the `matches` version:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-matches/noc2021_bilingual_matches.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-matches/occupation_matches.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
+```
+
+Every version needs **its own data file and its own widget file**; they define different
+globals and cannot substitute for one another. Two versions in one survey means four
+`<script>` tags plus Tom Select.
+
+### 2. Survey Flow
+
+Add an **Embedded Data** element **above the first block** — placement matters, because
+any element between blocks disables the Back button on the block that follows. Declare
+each field the version writes, including any `fieldPrefix`:
+
+`__js_occupation_noc_code`, `__js_occupation_category_name`, `__js_occupation_lang`,
+plus `__js_occupation_selected_label` (keywords, longlist, matches-optional) and
+`__js_occupation_selected_type` (longlist).
+
+### 3. Question HTML
+
+In **every language translation**:
+
+```html
+<select></select>
+<button type="button">Clear</button>
+```
+
+### 4. Question JavaScript
+
+```js
+Qualtrics.SurveyEngine.addOnload(function () {
+  window.occupationWidget.matches.init(this, {
+    fieldPrefix: "matches_",
+    forceLang:   null
+  });
+});
+```
+
+`window.occupationWidget` exposes `tomselect`, `categories`, `keywords`, `longlist` and
+`matches`. Options — all optional, each defaulting to the version's previous constant:
+
+| Option | Applies to | Default |
+|---|---|---|
+| `fieldPrefix` | all | `""` |
+| `forceLang` | all | `null` (auto-detect) |
+| `placeholder` | all | per-version `{EN, FR}` |
+| `depsTimeoutMs` | all | `15000` |
+| `maxOptions` | keywords, longlist | `200` |
+| `showSummary`, `showHints` | matches | `true` |
+| `maxSummary`, `maxHints` | matches | `2` |
+
+### 5. Publish
+
+Saving is not enough — **publish**, then test the published link in a private window.
+A private window matters: `sessionStorage` deliberately preserves a selection across
+reloads, which otherwise looks like a stale page.
+
+### Pasting instead of hosting
+
+Pasting a widget file into the question editor still works: paste its full contents and
+append the same stub. There is one copy of the logic either way. Hosting is recommended
+because re-pasting five versions across several questions is where stale scripts creep
+in — a missed paste leaves a silently stale question that is hard to tell apart from a
+caching problem.
+
+------------------------------------------------------------------------
+
+## Current CDN URLs
+
+Pinned to `d2db22e`. Only the header needs these; the question stub is typed in directly.
+
+| Version | Files |
+|---|---|
+| `tomselect` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-tomselect/noc2021_bilingual.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-tomselect/occupation_selectize.js) |
+| `categories` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-categories/noc2021_bilingual_categories.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-categories/occupation_categories.js) |
+| `keywords` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-keywords/noc2021_bilingual_keywords.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-keywords/occupation_keywords.js) |
+| `longlist` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-longlist/noc2021_bilingual_longlist.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-longlist/occupation_longlist.js) |
+| `matches` | [data](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-matches/noc2021_bilingual_matches.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-matches/occupation_matches.js) |
+
+Pin a **full commit SHA**, never `@main`. jsDelivr caches `@main` aggressively, and a
+SHA also locks a fielded survey to an exact snapshot — which is what you want
+mid-collection. If you re-run an R script and push new data, that pinned URL keeps
+serving the old file until you update the SHA.
+
+> **404 plus "Refused to execute … X-Content-Type-Options: nosniff"** means the URL is
+> wrong. jsDelivr answers a bad path with an HTML error page, and the browser refuses to
+> run a non-script MIME type. Open the URL directly: if you do not see JavaScript,
+> Qualtrics will not either.
 
 ------------------------------------------------------------------------
 
@@ -215,47 +306,3 @@ anything grow. `.plug-container` ("Powered by Qualtrics") sits *below* the contr
 trimming it does not help dropdown room; remove it in Look & Feel if your licence allows.
 
 ------------------------------------------------------------------------
-
-## Current header URLs
-
-Live, pinned URLs for each version — paste as-is. Only the **data file** is loaded from
-a URL; the widget script is pasted directly into the question's JavaScript editor.
-
-| Version | Data file URL (`Look & Feel → Header`) |
-|---|---|
-| `noc5-bilingual-tomselect` | <https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-tomselect/noc2021_bilingual.js> |
-| `noc5-bilingual-categories` | <https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-categories/noc2021_bilingual_categories.js> |
-| `noc5-bilingual-keywords` | <https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-keywords/noc2021_bilingual_keywords.js> |
-| `noc5-bilingual-longlist` | <https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-longlist/noc2021_bilingual_longlist.js> |
-| `noc5-bilingual-matches` | <https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-matches/noc2021_bilingual_matches.js> |
-
-Every version also needs Tom Select, which is the same two lines regardless:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
-```
-
-All five were verified returning HTTP 200 with `Content-Type: application/javascript`
-at commit `492a26d`.
-
-> **If the browser console shows a 404 plus "Refused to execute ... X-Content-Type-Options:
-> nosniff"**, the URL is wrong. jsDelivr answers a bad path with an HTML error page, and
-> because that is not a script MIME type the browser refuses to run it. The usual cause is
-> pasting a template URL containing `YOUR-USERNAME`, `YOUR-REPO` or `COMMIT-SHA` instead of
-> a real one, or a commit SHA that predates the file. Open the URL directly in a browser: if
-> you do not see JavaScript, Qualtrics will not either.
-
-------------------------------------------------------------------------
-
-## CDN hosting
-
-Generated data files are too large to paste into the Qualtrics header, so they are served from this repository via jsDelivr:
-
-```         
-https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/<version-name>/<data-file>.js
-```
-
-Pin a **full commit SHA** rather than `@main`. jsDelivr caches `@main` aggressively, so a SHA is the only reliable way to guarantee a survey serves the file you just pushed. It also means each fielded survey is locked to an exact data snapshot, which is what you want mid-collection.
-
-> **Path change:** before the move to `versions/`, the production data file lived at the repository root (`@main/noc2021_bilingual.js`). Any survey still pointing at that root URL must be updated to the versioned path above.

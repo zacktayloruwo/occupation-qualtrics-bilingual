@@ -24,21 +24,47 @@ The widget is currently functional at <https://uwo.eu.qualtrics.com/jfe/form/SV_
 
 ------------------------------------------------------------------------
 
-## Header to paste into Qualtrics
+## Installing in Qualtrics
 
-**Look & Feel → Header**, copy this exactly. These URLs are live and pinned to commit
-`492a26d` — paste them as-is, there is nothing to fill in.
+The widget code is loaded once from the survey header; each question carries only a
+short stub. See [Installation](../../README.md#installation) in the root README for the
+full walkthrough, including the Survey Flow fields.
+
+**1 — Look & Feel → Header.** Paste as-is; these URLs are live and pinned.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-tomselect/noc2021_bilingual.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-tomselect/noc2021_bilingual.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@d2db22efd0e81275f34f08fd8f7babf8feef23cd/versions/noc5-bilingual-tomselect/occupation_selectize.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
 ```
 
-The question JavaScript is **not** loaded from a URL — open the widget file in this
-folder and paste its full contents into the question's JavaScript editor.
+**2 — Question HTML** (in every language translation):
 
-------------------------------------------------------------------------
+```html
+<select></select>
+<button type="button">Clear</button>
+```
+
+**3 — Question JavaScript.** This is the whole thing:
+
+```js
+Qualtrics.SurveyEngine.addOnload(function () {
+  window.occupationWidget.tomselect.init(this, {
+    fieldPrefix: "",          // e.g. "tomselect_" if several versions share one survey
+    forceLang:   null,        // "EN" or "FR" on a single-language survey
+  });
+});
+```
+
+Every option defaults to the value it had as a constant, so an empty `{}` behaves
+exactly as before. `placeholder: { EN: "...", FR: "..." }` overrides the prompt text,
+and `depsTimeoutMs` the 15-second dependency deadline.
+
+> **Prefer to paste?** The whole widget file still works in the question editor —
+> paste its contents and append the same stub underneath. There is only one copy of
+> the logic either way. Hosting is recommended because updating five versions across
+> several questions by re-pasting is where stale scripts creep in.
 
 ## How It Works
 
@@ -84,124 +110,6 @@ Values are written immediately when the respondent makes or changes a selection 
 | `__js_occupation_lang` | `EN` or `FR` |
 
 > **Note:** Qualtrics automatically prefixes fields set by `setJSEmbeddedData` with `__js_`. The field names above are how they must be defined in the Survey Flow and referenced in piped text (e.g., `${e://Field/__js_occupation_noc_code}`).
-
-------------------------------------------------------------------------
-
-## Installation
-
-### Prerequisites
-
-- A Qualtrics account with access to Look & Feel and JavaScript editing
-- The files `noc2021_bilingual.js` and `occupation_selectize.js` from this folder
-- `noc2021_bilingual.js` hosted on a CDN (instructions below)
-
-------------------------------------------------------------------------
-
-### Step 1 — Host the data file on a CDN
-
-`noc2021_bilingual.js` is too large to paste into the Qualtrics header directly.
-
-1.  Push `noc2021_bilingual.js` to a public GitHub repository.
-
-2.  Find the full SHA of the commit (e.g., `a3f8c12b...`) on GitHub.
-
-3.  Your CDN URL will be:
-
-    ```         
-    https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-tomselect/noc2021_bilingual.js
-    ```
-
-    It is stored on Zack Taylor's GitHub at:
-
-    ```         
-    https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-tomselect/noc2021_bilingual.js
-    ```
-
-4.  Using a commit SHA instead of `@main` prevents stale cache issues on jsDelivr, and locks a fielded survey to an exact data snapshot.
-
-> **Path change:** This file previously lived at the repository root, served as `@main/noc2021_bilingual.js`. That URL no longer resolves — surveys pointing at it must be updated to the versioned path above.
-
-> **Cache note:** If you update the file, push a new commit and update the SHA in the URL. To force jsDelivr to serve a fresh copy immediately, visit: `https://purge.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@main/versions/noc5-bilingual-tomselect/noc2021_bilingual.js`
-
-------------------------------------------------------------------------
-
-### Step 2 — Add scripts to the Qualtrics survey header
-
-1.  In the Qualtrics editor, go to **Look & Feel → Header**.
-2.  Paste the following, replacing the jsDelivr URL with your own from Step 1:
-
-``` html
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@492a26dfbe4a38ea466fdb654a6aeb9ce5ef21a2/versions/noc5-bilingual-tomselect/noc2021_bilingual.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
-```
-
-3.  Save.
-
-------------------------------------------------------------------------
-
-### Step 3 — Add embedded data fields to the Survey Flow
-
-1.  Open the **Survey Flow**.
-
-2.  Add an **Embedded Data** element (place it before the block containing the occupation question).
-
-3.  Add these three fields exactly as written (Qualtrics requires the "\_\_js\_" prefix):
-
-    - `__js_occupation_noc_code`
-    - `__js_occupation_category_name`
-    - `__js_occupation_lang`
-
-4.  Leave their values blank (the widget will populate them).
-
-5.  Save the Survey Flow.
-
-------------------------------------------------------------------------
-
-### Step 4 — Add HTML to the question body
-
-Open the occupation question in the editor. Click the **HTML source** button (`<>`) and add the following to the question body:
-
-``` html
-What is your occupation?<br />
-<select></select>
-<br />
-<button type="button">Clear</button>
-```
-
-The `<select>` element is where Tom Select will render the dropdown. The button is optional but recommended — it allows respondents to clear their selection.
-
-> **Important:** If your survey has French translations, you must add this same HTML to the **French translation** of the question body as well. Go to **Tools → Translate Survey**, find the French version of this question, click the HTML source button, and paste the same markup with French text:
-
-``` html
-Quel est votre occupation ?<br />
-<select></select>
-<br />
-<button type="button">Effacer</button>
-```
-
-------------------------------------------------------------------------
-
-### Step 5 — Add the question JavaScript
-
-1.  Click the occupation question to select it.
-2.  Click **JavaScript** (in the question toolbar).
-3.  **Select all** existing content in the editor (`Cmd+A` / `Ctrl+A`) and delete it.
-4.  Paste the entire contents of `occupation_selectize.js`.
-5.  Click **Save**.
-
-> **Important:** The editor may pre-populate stubs like `Qualtrics.SurveyEngine.addOnload(function() { })`. Delete these before pasting — the script already contains its own `addOnload` wrapper.
-
-------------------------------------------------------------------------
-
-### Step 6 — Publish and test
-
-1.  **Publish** the survey.
-2.  Open the published survey link in a **private/incognito window**.
-3.  Type an occupation (e.g., "nurse", "teacher", "infirmier") and confirm the dropdown populates.
-4.  Select an option and submit the response.
-5.  Check the response data to confirm `__js_occupation_noc_code`, `__js_occupation_category_name`, and `__js_occupation_lang` are populated.
-6.  If your survey has a language switcher, test switching languages before and after making a selection to confirm the selection is preserved.
 
 ------------------------------------------------------------------------
 
@@ -256,21 +164,22 @@ Quel est votre occupation ?<br />
 
 ---
 
-### Running several versions in ONE survey: set `FIELD_PREFIX`
+### Running several versions in ONE survey: `fieldPrefix`
 
 Every version writes the same `__js_occupation_*` embedded-data field names, so two
-versions in the same survey overwrite each other and you record one answer instead of
-two. Set a prefix at the top of each widget script:
+versions in one survey overwrite each other and you record one answer instead of two.
+Pass a prefix in the question stub:
 
 ```js
-var FIELD_PREFIX = "matches_";   // "" when the survey fields only one version
+window.occupationWidget.tomselect.init(this, { fieldPrefix: "matches_" });
 ```
 
-Fields then become `__js_matches_occupation_noc_code` and so on, and the prefix is
-applied to the `sessionStorage` key too. **Add each prefixed name to the Survey Flow.**
+Fields become `__js_matches_occupation_noc_code` and so on, and the prefix applies to
+the `sessionStorage` key too, so one question cannot pre-fill another. **Add each
+prefixed name to the Survey Flow.** Leave it out entirely on a single-version survey.
 
-Verified with two versions on one page: six distinct fields, two distinct session
-keys, both answers preserved independently.
+Verified with all five versions on one page: 18 fields across five namespaces, no
+collisions, and every field blank after clearing.
 
 ### If the dropdown never appears
 
@@ -359,37 +268,34 @@ injected block is a plain stylesheet rather than inline styles.
 
 ### Placeholder text
 
-The greyed-out prompt inside the box is set near the top of the widget script and is
-language-aware:
+The greyed-out prompt inside the box is language-aware and set in the stub:
 
 ```js
-var PLACEHOLDER = { EN: "Enter your job title",
-                    FR: "Entrez votre titre d'emploi" };
+window.occupationWidget.tomselect.init(this, {
+  placeholder: { EN: "Enter your job title", FR: "Entrez votre titre d'emploi" }
+});
 ```
 
-Set either to `""` for no placeholder.
+Omit it for the version's default, or pass `{ EN: "", FR: "" }` for none. The
+`categories` version defaults to "Search occupation categories" instead, because
+typing a job title there matches nothing by design.
 
-### Single-language surveys: set `FORCE_LANG`
+### Single-language surveys: `forceLang`
 
-Language detection only ever recognises French; anything it cannot positively
-identify as French becomes English. The widget has no way to see which languages
-the survey actually offers, so it cannot fall back to "whichever language remains".
+Language detection only ever recognises French; anything it cannot positively identify
+as French becomes English. The widget cannot see which languages the survey offers, so
+it cannot fall back to "whichever language remains".
 
-On a bilingual survey this is fine. On a survey offering only ONE language, and
-therefore having no language selector:
-
-- **English-only** works correctly, because English is the fallback.
-- **French-only** works only if Qualtrics exposes `Q_Language=FR` in the URL or
-  `<html lang="fr">`. If neither is present the widget renders in **English** and
-  records `__js_occupation_lang` as `EN`, silently.
-
-Set `FORCE_LANG` at the top of the widget script to remove the guesswork:
+That is fine on a bilingual survey and correct on an English-only one. On a
+**French-only** survey it works only if Qualtrics exposes `Q_Language=FR` or
+`<html lang="fr">`; if neither is present the widget renders in **English** and records
+`__js_occupation_lang` as `EN`, silently. Remove the guesswork:
 
 ```js
-var FORCE_LANG = "FR";   // or "EN"; null means auto-detect
+window.occupationWidget.tomselect.init(this, { forceLang: "FR" });
 ```
 
-Verified: with `FORCE_LANG` unset and no language signals present, the widget resolves
-to English; set to `"FR"` it renders French regardless; set to `"EN"` it stays English
-even when `<html lang="fr">` is present. Auto-detection handles `fr`, `FR`, `fr-CA`,
-`FR-CA` and `fr_CA`.
+Verified: with no override and no language signals the widget resolves to English;
+`"FR"` renders French regardless; `"EN"` holds English even with a stray
+`<html lang="fr">`. Auto-detection handles `fr`, `FR`, `fr-CA`, `FR-CA` and `fr_CA`.
+
