@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Occupation selector versions — NOC 2021</title>
-<meta name="description" content="Five search behaviours for a bilingual NOC 2021 occupation selector in Qualtrics. Interactive comparison.">
+<meta name="description" content="Six search behaviours for a bilingual NOC 2021 occupation selector in Qualtrics. Interactive comparison.">
 <style>
  :root{
    --ink:#16181d; --mut:#5c6370; --faint:#8a909b;
@@ -53,16 +53,16 @@
 </style></head><body>
 
 <header><div class="wrap">
-  <h1>Occupation selector — five search behaviours</h1>
+  <h1>Occupation selector — six search behaviours</h1>
   <p class="by">Zack Taylor, University of Western Ontario ·
      <a href="https://github.com/zacktayloruwo/occupation-qualtrics-bilingual">source on GitHub</a></p>
 
-  <p class="lede">These are five working versions of a bilingual occupation-search widget for
+  <p class="lede">These are six working versions of a bilingual occupation-search widget for
   Qualtrics surveys, built on the <a href="https://open.canada.ca/data/en/dataset/1feee3b5-8068-4dbb-b361-180875837593">National
   Occupational Classification (NOC) 2021</a>. A respondent types what they do for a living and
   picks from a dropdown; the widget records the 5-digit NOC code behind their choice.</p>
 
-  <p class="lede">All five wrap the same classification and resolve to the same codes. What differs
+  <p class="lede">All six wrap the same classification and resolve to the same codes. What differs
   is <b>what the respondent sees, what the search actually matches against, and the order results
   appear in</b>. The point of this page is to make those differences easy to feel rather than
   describe, so we can decide which to field.</p>
@@ -72,7 +72,7 @@
 
 <div class="wrap">
 
-  <h2>How the five differ</h2>
+  <h2>How the six differ</h2>
   <div class="scroll"><table>
     <thead><tr><th>Version</th><th>Rows shown</th><th>What the search matches</th><th>Order</th><th>Data file</th></tr></thead>
     <tbody>
@@ -86,6 +86,8 @@
           <td>both, all selectable</td><td>alphabetical</td><td>4.8 MB</td></tr>
       <tr><td><code>matches</code></td><td>516 category names</td>
           <td>category names and titles, with the matched titles shown</td><td>relevance</td><td>2.7 MB</td></tr>
+      <tr><td><code>matches-freq</code></td><td>516 category names</td>
+          <td>as <code>matches</code></td><td><b>2021 Census frequency</b></td><td>2.7 MB</td></tr>
     </tbody>
   </table></div>
   <p class="note">Row counts are for English; French lists are slightly longer (516 categories,
@@ -95,13 +97,16 @@
 
   <h2>Things worth trying</h2>
   <p class="note">
-  Type <kbd>nurse</kbd> into all five and compare: <code>categories</code> returns 5 results,
+  Type <kbd>nurse</kbd> into all six and compare: <code>categories</code> returns 5 results,
   <code>tomselect</code> and <code>matches</code> 15, <code>keywords</code> 153, <code>longlist</code> 158.<br>
   Type <kbd>head nurse</kbd> into <code>tomselect</code> and then <code>matches</code>: both return
   <i>Managers in horticulture</i> first, but only <code>matches</code> shows you that nothing in that
   category actually matched your words.<br>
   Type <kbd>plumber</kbd> into <code>matches</code> to see three near-identical categories become
   distinguishable.<br>
+  Type <kbd>manager</kbd> into <code>matches</code> and <code>matches-freq</code>: relevance ranking
+  offers <i>Managers in aquaculture</i> (930 workers), frequency ordering offers
+  <i>Retail and wholesale trade managers</i> (397,075).<br>
   Type <kbd>manager</kbd> to see the cost of alphabetical ordering — roughly 1,200 titles match, so
   the list opens at <i>Abattoir manager</i> and never reaches the useful ones.<br>
   Switch to <kbd>Français</kbd> after choosing something, and watch what survives the switch.<br>
@@ -121,6 +126,14 @@
 
 <script>
 const VERSIONS = [
+  {id:'matches', name:'noc5-bilingual-matches', tag:'ready to test',
+   desc:'Identical to <code>tomselect</code> in what it shows and what it records, but it stops hiding the match. A line above the box names the closest occupation titles to what you typed, and each row in the list says which of its own titles matched. Same 516 answers, with the reasoning made visible.',
+   shown:'516 category names', searched:'categories + titles, with the matched titles shown', order:'relevance',
+   note:'Try <b>head nurse</b> here and in <code>tomselect</code> to see the difference feedback makes.'},
+  {id:'matchesFreq', name:'noc5-bilingual-matches-freq', tag:'ready to test',
+   desc:'The same match feedback, but results are ordered by how many people actually hold each occupation, from the 2021 Census, so the commonest categories come first rather than whichever the search engine scored highest.',
+   shown:'516 category names', searched:'categories + titles, with the matched titles shown', order:'census frequency',
+   note:'Type <b>manager</b> and compare with <code>matches</code>: this returns Retail and wholesale trade managers (397,075 workers) where relevance ranking returns Managers in aquaculture (930).'},
   {id:'tomselect', name:'noc5-bilingual-tomselect', tag:'in production',
    desc:'Shows the 516 broad category names, but quietly searches the ~28,000 occupation titles behind them. Typing a specific job title surfaces the category it belongs to, without ever showing you the title you matched.',
    shown:'516 category names', searched:'categories + hidden titles', order:'relevance',
@@ -136,11 +149,7 @@ const VERSIONS = [
   {id:'longlist', name:'noc5-bilingual-longlist', tag:'ready to test',
    desc:'Everything is selectable — both the category names and every occupation title, interleaved in one alphabetical list. The broadest surface, and the longest.',
    shown:'28,457 rows, both kinds', searched:'both', order:'alphabetical',
-   note:'After a language switch, a chosen title falls back to displaying its category in the new language; the stored answer is left untouched.'},
-  {id:'matches', name:'noc5-bilingual-matches', tag:'ready to test',
-   desc:'Identical to <code>tomselect</code> in what it shows and what it records, but it stops hiding the match. A line above the box names the closest occupation titles to what you typed, and each row in the list says which of its own titles matched. Same 516 answers, with the reasoning made visible.',
-   shown:'516 category names', searched:'categories + titles, with the matched titles shown', order:'relevance',
-   note:'Try <b>head nurse</b> here and in <code>tomselect</code> to see the difference feedback makes.'}
+   note:'After a language switch, a chosen title falls back to displaying its category in the new language; the stored answer is left untouched.'}
 ];
 
 const lang = (new URLSearchParams(location.search).get('Q_Language')||'EN').toUpperCase();

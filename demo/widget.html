@@ -43,7 +43,8 @@ const SPEC = {
   categories: {dir:'noc5-bilingual-categories', data:'noc2021_bilingual_categories.js', js:'occupation_categories.js'},
   keywords:   {dir:'noc5-bilingual-keywords',   data:'noc2021_bilingual_keywords.js',   js:'occupation_keywords.js'},
   longlist:   {dir:'noc5-bilingual-longlist',   data:'noc2021_bilingual_longlist.js',   js:'occupation_longlist.js'},
-  matches:    {dir:'noc5-bilingual-matches',    data:'noc2021_bilingual_matches.js',    js:'occupation_matches.js'}
+  matches:    {dir:'noc5-bilingual-matches',    data:'noc2021_bilingual_matches.js',    js:'occupation_matches.js'},
+  matchesFreq:{dir:'noc5-bilingual-matches-freq',data:'noc2021_bilingual_matches_freq.js',js:'occupation_matches_freq.js'}
 };
 
 /* Minimal stand-in for the Qualtrics survey engine, so the unmodified
@@ -58,6 +59,8 @@ function render(){
     '<span class="k">'+k+':</span> '+String(window.__ED[k]).replace(/</g,'&lt;')).join('\n');
 }
 window.Qualtrics = { SurveyEngine: {
+  // Kept for the paste-style workflow; the hosted widgets register on
+  // window.occupationWidget and are started by init() below instead.
   addOnload: f => window.__onload = f,
   setJSEmbeddedData: (k,v) => { window.__ED['__js_'+k] = v; render(); }
 }};
@@ -72,6 +75,14 @@ function load(src){
 /* Row counts for the active language, reported back to the parent page so the
    figures shown are always computed from the data actually loaded. */
 function stats(){
+  if (WHICH === 'matchesFreq'){
+    const c = window.nocMatchesFreq || [];
+    const titles = c.reduce((n,x) => n + ((x['occupations_'+LANG]||[]).length), 0);
+    const workers = c.reduce((n,x) => n + (x.freq||0), 0);
+    return {rows: c.length, detail: c.length.toLocaleString()+' categories, '
+                    + titles.toLocaleString()+' titles, ordered by '
+                    + workers.toLocaleString()+' census workers'};
+  }
   if (WHICH === 'matches'){
     const c = window.nocMatches || [];
     const titles = c.reduce((n,x) => n + ((x['occupations_'+LANG]||[]).length), 0);
@@ -109,7 +120,18 @@ function stats(){
     return;
   }
   document.getElementById('q').hidden = false;
-  window.__onload.call(CTX);
+  // The widgets export init() on a namespace now rather than calling addOnload
+  // themselves, so start this one the same way a question stub would.
+  const api = window.occupationWidget && window.occupationWidget[WHICH];
+  if (api && typeof api.init === 'function') {
+    api.init(CTX, {});
+  } else if (typeof window.__onload === 'function') {
+    window.__onload.call(CTX);          // older, self-registering build
+  } else {
+    document.getElementById('status').textContent =
+      'Could not start widget: window.occupationWidget.' + WHICH + ' is missing.';
+    return;
+  }
   /* the widget polls for its dependencies, so wait for the control to exist */
   const wait = setInterval(() => {
     const ts = document.querySelector('select').tomselect;

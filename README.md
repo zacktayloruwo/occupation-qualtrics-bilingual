@@ -2,7 +2,7 @@
 
 Zack Taylor, University of Western Ontario, [zack.taylor\@uwo.ca](mailto:zack.taylor@uwo.ca){.email}
 
-**Interactive demo: <https://zacktayloruwo.github.io/occupation-qualtrics-bilingual/>** Try all five versions side by side, in English or French, without installing anything.
+**Interactive demo: <https://zacktayloruwo.github.io/occupation-qualtrics-bilingual/>** Try all six versions side by side, in English or French, without installing anything.
 
 A collection of JavaScript occupation-search widgets for Qualtrics surveys, built on the National Occupational Classification (NOC) 2021. Each **version** is a self-contained variant of the selector — a different aggregation level, interaction style, or language configuration — living in its own subfolder under `versions/`.
 
@@ -38,8 +38,9 @@ Each version owns its data-prep script outright. Versions do **not** import shar
 | [`noc5-bilingual-categories`](versions/noc5-bilingual-categories/) | 5-digit unit group (516) | EN + FR | Tom Select, category names only, alphabetical | Ready to test |
 | [`noc5-bilingual-keywords`](versions/noc5-bilingual-keywords/) | 5-digit unit group (516) | EN + FR | Tom Select, occupation titles only, alphabetical | Ready to test |
 | [`noc5-bilingual-matches`](versions/noc5-bilingual-matches/) | 5-digit unit group (516) | EN + FR | Tom Select, as tomselect but shows which occupation titles matched | Ready to test |
+| [`noc5-bilingual-matches-freq`](versions/noc5-bilingual-matches-freq/) | 5-digit unit group (516) | EN + FR | As matches, ordered by 2021 Census worker counts | Ready to test |
 
-The five versions cover every combination of what is displayed and what is searched:
+The six versions cover every combination of what is displayed and what is searched:
 
 | Version | Rows shown (EN) | Searchable text | Match ordering |
 |----|----|----|----|
@@ -48,8 +49,9 @@ The five versions cover every combination of what is displayed and what is searc
 | `noc5-bilingual-keywords` | 27,941 occupation titles | occupation titles only | alphabetical |
 | `noc5-bilingual-longlist` | 28,457 of both | both | alphabetical |
 | `noc5-bilingual-matches` | 516 category names | category names + occupation titles, **with the matched titles shown** | relevance |
+| `noc5-bilingual-matches-freq` | 516 category names | as above | **2021 Census frequency** |
 
-All five resolve to the same 5-digit NOC codes, so responses are directly comparable.
+All six resolve to the same 5-digit NOC codes, so responses are directly comparable.
 
 ------------------------------------------------------------------------
 
@@ -63,6 +65,7 @@ All versions are built from NOC 2021 Version 1.0, retrieved from the [Open Gover
 | `noc_2021_version_1.0_-_elements-additional.csv` | Supplementary English examples |
 | `cnp_2021_version_1.0_-_elements.csv` | French (CNP) elements |
 | `12-583-x2021001-eng.pdf` | NOC 2021 classification manual (reference) |
+| `census_2021_NOC_5_frequency.csv` | 2021 Census worker counts per 5-digit NOC category, used by `matches-freq` |
 
 A caution carried over from the original build: the EN and FR illustrative-example lists inside a category are **not indexed in parallel**, so individual example titles cannot be reliably matched across languages. Use `category_code` as the stable, language-independent identifier in any version.
 
@@ -130,8 +133,8 @@ Qualtrics.SurveyEngine.addOnload(function () {
 });
 ```
 
-`window.occupationWidget` exposes `tomselect`, `categories`, `keywords`, `longlist` and
-`matches`. Options — all optional, each defaulting to the version's previous constant:
+`window.occupationWidget` exposes `tomselect`, `categories`, `keywords`, `longlist`,
+`matches` and `matchesFreq`. Options — all optional, each defaulting to the version's previous constant:
 
 | Option | Applies to | Default |
 |---|---|---|
@@ -154,7 +157,7 @@ reloads, which otherwise looks like a stale page.
 
 Pasting a widget file into the question editor still works: paste its full contents and
 append the same stub. There is one copy of the logic either way. Hosting is recommended
-because re-pasting five versions across several questions is where stale scripts creep
+because re-pasting six versions across several questions is where stale scripts creep
 in — a missed paste leaves a silently stale question that is hard to tell apart from a
 caching problem.
 
@@ -207,6 +210,7 @@ bilingual payload, so an English-only survey waits on a download it never uses:
 |---|---|---|
 | `tomselect` | 466 KB | **185 KB** |
 | `matches` | 466 KB | **185 KB** |
+| `matches-freq` | [bilingual](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@5e420b183bda469f84cf9d9bdb8a50049422d594/versions/noc5-bilingual-matches-freq/noc2021_bilingual_matches_freq.js) · [English-only](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@5e420b183bda469f84cf9d9bdb8a50049422d594/versions/noc5-bilingual-matches-freq/noc2021_en_matches_freq.js) · [widget](https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@5e420b183bda469f84cf9d9bdb8a50049422d594/versions/noc5-bilingual-matches-freq/occupation_matches_freq.js) |
 | `keywords` | 603 KB | **265 KB** |
 | `longlist` | 641 KB | **283 KB** |
 | `categories` | 19 KB | **8 KB** |
