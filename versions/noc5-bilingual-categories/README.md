@@ -28,11 +28,11 @@ Everything needed is on this page.
 
 ### 1. Look & Feel → Header
 
-Paste as-is. These URLs are live and pinned to commit `5e420b1`.
+Paste as-is. These URLs are live and pinned to commit `31dd9ed`.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@5e420b183bda469f84cf9d9bdb8a50049422d594/versions/noc5-bilingual-categories/noc2021_bilingual_categories.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@5e420b183bda469f84cf9d9bdb8a50049422d594/versions/noc5-bilingual-categories/occupation_categories.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@31dd9edfdabf07050e063c72a21cafe69995fb82/versions/noc5-bilingual-categories/noc2021_bilingual_categories.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@31dd9edfdabf07050e063c72a21cafe69995fb82/versions/noc5-bilingual-categories/occupation_categories.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
 ```
@@ -283,8 +283,8 @@ header — same global name, same structure, French dropped:
 Swap the data `<script>` in step 1; **nothing else changes**.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@5e420b183bda469f84cf9d9bdb8a50049422d594/versions/noc5-bilingual-categories/noc2021_en_categories.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@5e420b183bda469f84cf9d9bdb8a50049422d594/versions/noc5-bilingual-categories/occupation_categories.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@31dd9edfdabf07050e063c72a21cafe69995fb82/versions/noc5-bilingual-categories/noc2021_en_categories.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zacktayloruwo/occupation-qualtrics-bilingual@31dd9edfdabf07050e063c72a21cafe69995fb82/versions/noc5-bilingual-categories/occupation_categories.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.default.min.css">
 ```
