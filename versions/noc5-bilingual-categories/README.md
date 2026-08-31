@@ -171,9 +171,12 @@ Paste into **Look & Feel → Style → Custom CSS**. These are Qualtrics-level s
 apply to the whole survey.
 
 ```css
-/* The survey header holds only the <script> and <link> tags from step 1. They are
-   display:none, so the container renders as empty space below the logo. Collapse it,
-   and keep a modest padding on the logo rather than dropping to 0. */
+/* The survey header holds only the script and stylesheet tags from step 1.
+   They are display:none, so the container renders as empty space below the
+   logo. Collapse it, keeping a modest padding on the logo rather than 0.
+   Note: avoid angle brackets anywhere in this box. Qualtrics sanitises
+   Custom CSS and rejects the whole sheet as invalid if it sees tag-like
+   text, even inside a comment. */
 #header-container {
   height: 0 !important;
   min-height: 0 !important;
@@ -212,6 +215,13 @@ apply to the whole survey.
 .question-display   { line-height: 1.25; }
 .question-display i { font-size: 75%; }
 ```
+
+> **"Unable to save Look And Feel. Custom CSS is invalid."** Qualtrics sanitises Custom
+> CSS and rejects the entire sheet if it finds tag-like text — including inside a
+> comment. An earlier version of the comment above mentioned `<script>` and `<link>`,
+> which is enough to trigger it. Keep angle brackets out of this box entirely. If you
+> still hit the error, paste the sheet in halves to find the offending rule: the
+> message names no line number.
 
 **Do not use the `user-scalable=no` viewport advice** you will find elsewhere for the
 zoom problem. iOS has ignored it since iOS 10, so it does not work, and to the extent

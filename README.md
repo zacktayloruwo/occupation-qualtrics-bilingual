@@ -241,10 +241,13 @@ Applies to every version — these are Qualtrics-level settings, not per-widget 
 Paste into **Look & Feel → Style → Custom CSS**.
 
 ```css
-/* The survey header holds only the <script> and <link> tags pasted into
-   Look & Feel -> Header. They are display:none, so the container renders
-   80px of pure empty space below the logo. Collapse it, and keep a modest
-   padding on the logo itself rather than dropping to 0. */
+/* The survey header holds only the script and stylesheet tags pasted into
+   Look and Feel, Header. They are display:none, so the container renders
+   80px of pure empty space below the logo. Collapse it, keeping a modest
+   padding on the logo rather than 0.
+   Note: avoid angle brackets anywhere in this box. Qualtrics sanitises
+   Custom CSS and rejects the whole sheet as invalid if it sees tag-like
+   text, even inside a comment. */
 #header-container {
   height: 0 !important;
   min-height: 0 !important;
