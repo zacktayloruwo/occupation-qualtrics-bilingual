@@ -22,6 +22,7 @@ versions/
     <widget>.js             The Qualtrics question JavaScript
   _template/              Starting point for a new version
 tools/                    Maintenance scripts (see Updating the pinned commit)
+qualtrics-css/            Custom CSS sheets, one per Qualtrics skin
 LICENSE
 ```
 
@@ -234,6 +235,23 @@ versions loads two data files, which is why an English-only build is worth rough
 a megabyte there.
 
 ------------------------------------------------------------------------
+
+### Two Qualtrics skins, two CSS sheets
+
+Qualtrics renders surveys with two different markup structures, and a Custom CSS sheet
+written for one **matches nothing in the other** — silently, with no error. It is not an
+account-wide setting: two surveys in the same account, created months apart, can differ.
+
+[`qualtrics-css/`](qualtrics-css/) holds a sheet for each, plus a one-line console check
+for telling them apart:
+
+| File | For markup using |
+|---|---|
+| `qualtrics-css/new-experience.css` | `question-display`, `header-container`, `choice-label` |
+| `qualtrics-css/classic-skin.css` | `QuestionOuter`, `QuestionText`, `ChoiceStructure`, `SkinInner` |
+
+The Tom Select and `occ-*` rules are identical in both, because those classes are created
+by the widget rather than by Qualtrics.
 
 ## Mobile layout and the iOS zoom
 

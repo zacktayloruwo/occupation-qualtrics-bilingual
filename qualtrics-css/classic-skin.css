@@ -1,0 +1,119 @@
+/* ===========================================================================
+   Qualtrics Custom CSS - CLASSIC SKIN (JFE / SkinV2)
+   Look and Feel, Style, Custom CSS
+
+   For surveys whose markup uses QuestionOuter, QuestionText, ChoiceStructure
+   and SkinInner. Newer-experience surveys use question-display and
+   header-container instead and need new-experience.css in this folder.
+   Checking which one you have: see README.md here.
+
+   Do not put angle brackets anywhere in this file. Qualtrics sanitises Custom
+   CSS and rejects the whole sheet as invalid if it sees tag-like text, even
+   inside a comment, and the error names no line number.
+   =========================================================================== */
+
+
+/* --- Space above the first question -------------------------------------
+   Measured on a published survey at desktop width, the first question began
+   214px down: 80px of SkinInner padding, a 74px logo block, a 20px logo
+   margin, and a 40px Header that is entirely empty because it holds only the
+   script and stylesheet tags pasted into the survey header. Collapsing the
+   empty Header and trimming the rest brings that to 92px.
+   ------------------------------------------------------------------------ */
+
+.SkinInner {
+  padding-top: 10px !important;
+}
+
+#Header {
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+#Logo {
+  margin-bottom: 8px !important;
+}
+
+
+/* --- Question text -------------------------------------------------------
+   QuestionText is 20px with a 30px line height by default. 1.25 gives 25px.
+   The italic rule is for instruction text set in an i element.
+   ------------------------------------------------------------------------ */
+
+.QuestionText {
+  line-height: 1.25 !important;
+}
+
+.QuestionText i {
+  font-size: 75%;
+}
+
+.QuestionBody {
+  padding-bottom: 10px !important;
+}
+
+
+/* --- Radio and checkbox choice spacing -----------------------------------
+   Each choice is an li.Selection containing span.LabelWrapper (8px bottom
+   margin) wrapping label.SingleAnswer (13px vertical padding). The label is
+   the tap target, so the margin is the safe thing to trim: it takes the gap
+   from 53px to 47px while the target stays at 45px.
+   ------------------------------------------------------------------------ */
+
+.LabelWrapper {
+  margin-bottom: 2px !important;
+}
+
+
+/* --- Navigation ---------------------------------------------------------- */
+
+#Buttons {
+  padding-top: 8px !important;
+}
+
+
+/* --- Occupation widget ---------------------------------------------------
+   These classes are created by the widget itself rather than by Qualtrics, so
+   they are the same in both skins and carry over unchanged.
+   ------------------------------------------------------------------------ */
+
+.occ-summary {
+  margin-bottom: 2px !important;
+}
+
+
+@media (max-width: 768px) {
+
+  /* iOS Safari force-zooms any input under 16px and never zooms back out.
+     Tom Select ships its input at 13px. Do not use the user-scalable=no
+     viewport advice for this: iOS has ignored it since iOS 10, and it blocks
+     pinch-zoom for anyone who needs to magnify text. */
+  .ts-control,
+  .ts-control input,
+  .ts-dropdown {
+    font-size: 16px !important;
+  }
+
+  /* On a phone this skin renders choice labels at 41px, below the 44px that
+     Apple's HIG and WCAG 2.5.5 both ask for. Raising the padding fixes that
+     and still leaves the gap tighter than the untouched default. */
+  label.SingleAnswer {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+  }
+
+  .SkinInner {
+    padding-top: 6px !important;
+  }
+
+  .QuestionBody {
+    padding-bottom: 6px !important;
+  }
+
+  #Buttons {
+    padding-top: 6px !important;
+  }
+}
